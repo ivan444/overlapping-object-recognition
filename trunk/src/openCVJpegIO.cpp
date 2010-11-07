@@ -1,9 +1,8 @@
-#include "imageIO.h"
+
 #include "openCVJpegIO.h"
 
-
 void JpegIO::write(ColorImage* img, char* savePath){
-	cout << "Pisem " << savePath << endl;
+	//cout << "Pisem " << savePath << endl;
 	IplImage * pRGBImg  = 0;
 	pRGBImg = cvCreateImage
    ( cvSize(img->getWidth(),img->getHeight() ), 
@@ -13,9 +12,10 @@ void JpegIO::write(ColorImage* img, char* savePath){
    
    if( !cvSaveImage(savePath, pRGBImg) ){
 		cerr << "failed to write image file\n";
+		return;
 	}
 	cvReleaseImage(&pRGBImg);
-	cout << "Gotovo pisanje " << savePath << endl;
+	//cout << "Gotovo pisanje " << savePath << endl;
 	return;
 }
 
@@ -24,23 +24,25 @@ void JpegIO::write(GrayImage* img, char* savePath){
 	IplImage * pGrayImg  = 0;
 	pGrayImg = cvCreateImage
    ( cvSize(img->getWidth(),img->getHeight() ), 
-   STANDARD_IMAGE_DEPTH, GRAY_IMAGE_CHANNELS );
+   IPL_DEPTH_8U, GRAY_IMAGE_CHANNELS );
    copyImgToIplGray(pGrayImg, img);
    if( !cvSaveImage(savePath, pGrayImg) ){
 		cerr << "failed to write image file" << endl;
+		return;
 	}
 	cvReleaseImage(&pGrayImg);
 	return;
 }
 
 ColorImage* JpegIO::read(char* imgPath){
-	  cout << "Ucitavam " << imgPath << endl;
+	  //cout << "Ucitavam " << imgPath << endl;
 	  IplImage * pRGBImg  = 0;
 
 	  // Load the RGB image from file
 	  pRGBImg = cvLoadImage(imgPath, CV_LOAD_IMAGE_UNCHANGED);
 	  if(!pRGBImg){
 	  	cerr << "failed to load input image" << endl;
+		return NULL;
 	  }
 	  ColorImage *img = new ColorImage(pRGBImg->width, pRGBImg->height);
 	  copyIplToImgColor(pRGBImg, img);
@@ -48,7 +50,7 @@ ColorImage* JpegIO::read(char* imgPath){
      //cvShowImage("Color test 1", pRGBImg);
      //cvWaitKey(0);
 	 // cvReleaseImage(&pRGBImg);
-	  cout << "Gotovo ucitavanje " << imgPath << endl;
+	  //cout << "Gotovo ucitavanje " << imgPath << endl;
 	  return img;
 }
 
@@ -85,7 +87,7 @@ void JpegIO::copyImgToIplGray(IplImage *iplImg, GrayImage *img){
 			*TODO: pogledati kako obaviti ovo castanje iz int u uchar.
 			*		 možda promijeniti tip varijable GrayPixel.v
 			*/
-			((uchar*)(iplImg->imageData + iplImg->widthStep*y))[x*3] = (uchar)value;
+			((uchar*)(iplImg->imageData + iplImg->widthStep*y))[x] = (uchar)value;
 		}
 	}
 	return;
