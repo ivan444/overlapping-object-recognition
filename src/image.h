@@ -5,9 +5,9 @@
  * Pixel sa tri vrijednosti za slike u boji (npr. RGB ili HSI pixel).
  */
 struct ColorPixel {
-	int v1;				//R
-	int v2;				//G
-	int v3;				//B
+	int v1;				//R ili H
+	int v2;				//G ili S
+	int v3;				//B ili I
 };
 
 /**
