@@ -5,9 +5,9 @@
  * Pixel sa tri vrijednosti za slike u boji (npr. RGB ili HSI pixel).
  */
 struct ColorPixel {
-	int v1;
-	int v2;
-	int v3;
+	int v1;				//R
+	int v2;				//G
+	int v3;				//B
 };
 
 /**
@@ -50,6 +50,14 @@ public:
 		imgData[y*width+x] = val;
 	}
 	
+	int getWidth(){
+		return this->width;
+	}
+	
+	int getHeight(){
+		return this->height;
+	}
+	
 };
 
 class GrayImage {
@@ -86,6 +94,14 @@ public:
 	 */ 
 	void set(int x, int y, GrayPixel val) {
 		imgData[y*width+x] = val;
+	}
+	
+	int getWidth(){
+		return this->width;
+	}
+	
+	int getHeight(){
+		return this->height;
 	}
 	
 };
