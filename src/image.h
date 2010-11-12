@@ -17,6 +17,11 @@ struct GrayPixel {
 	int v;
 };
 
+struct PixelCoordinates {
+	unsigned int x;
+	unsigned int y;
+};
+
 class ColorImage {
 private:
 	int width;
