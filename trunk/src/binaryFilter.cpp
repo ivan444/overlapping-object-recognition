@@ -1,6 +1,6 @@
 /*
  * Filter za binarizaciju slika jednostrukim pragom.
- * Koristi se konstantni prag definiran iz vana.
+ * Koristi se konstantni prag definiran izvana.
  */
 
 #include "binaryFilter.h"
