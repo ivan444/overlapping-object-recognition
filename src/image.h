@@ -54,6 +54,11 @@ public:
 	void set(int x, int y, ColorPixel val) {
 		imgData[y*width+x] = val;
 	}
+	void setAll(ColorPixel val) {
+		int imgSize = width*height;
+		for (int i = 0; i <imgSize; i++)
+			imgData[i] = val;
+	}
 	
 	int getWidth(){
 		return this->width;
@@ -99,6 +104,11 @@ public:
 	 */ 
 	void set(int x, int y, GrayPixel val) {
 		imgData[y*width+x] = val;
+	}
+	void setAll(GrayPixel val) {
+		int imgSize = width*height;
+		for (int i = 0; i <imgSize; i++)
+			imgData[i] = val;
 	}
 	
 	int getWidth(){

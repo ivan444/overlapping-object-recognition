@@ -33,7 +33,7 @@ GrayImage* EdgeDetector::binaryConvolution(GrayImage *img){
 }
 
 
-GrayImage* EdgeDetector::boundaryFolower(GrayImage *img){
+GrayImage* EdgeDetector::boundaryFollower(GrayImage *img){
 	GrayImage *boundImg = new GrayImage(img->getWidth(), img->getHeight());
 	PixelCoordinates white, black;
 	bool isOver = false;

@@ -20,7 +20,7 @@ GrayImage* BinaryFilter::applyFilterC2G(ColorImage *src) {
 			ColorPixel cp = src->get(x,y);
 			GrayPixel gp;
 			gp.v = (int)(cp.v1*RED_F + cp.v2*GREEN_F + cp.v3*BLUE_F);
-			if (gp.v < _threshold) gp.v = 0;
+			if (gp.v > _threshold) gp.v = 0;
 			else gp.v = 255;
 			filtered->set(x,y,gp);
 		}

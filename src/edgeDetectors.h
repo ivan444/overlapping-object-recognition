@@ -16,7 +16,7 @@ class EdgeDetector{
 
 public:
  GrayImage* binaryConvolution(GrayImage *img);
- GrayImage* boundaryFolower(GrayImage *img);
+ GrayImage* boundaryFollower(GrayImage *img);
  GrayImage* sobel(ColorImage* img, int treshold);
 
 private:
