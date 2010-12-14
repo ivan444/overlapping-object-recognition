@@ -11,6 +11,7 @@ class EdgeSegment
 {
 private:
 	double angle;
+	double angle_A;
 	double length;
 	double middleX;
 	double middleY;
@@ -26,11 +27,14 @@ public:
 		double dy = ((int)last.y) - ((int)first.y);
 		length = sqrt(dx*dx + dy*dy);
 		angle = atan2(dy,dx);
+		angle_A=0;
 	}
 
 	~EdgeSegment(){}
 	double getAngle(){return angle;}
-	double getLength(){return length;}
+	double getAngle_A(){return angle_A;}
+	void setAngle_A(double value){angle_A=value;}
+	double getLength()const{return length;}
 	double getMiddleX (){return middleX;}
 	double getMiddleY() {return middleY;}
 	PixelCoordinates getFirst() {return first;}
