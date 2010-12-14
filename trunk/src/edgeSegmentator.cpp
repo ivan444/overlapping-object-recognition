@@ -30,6 +30,17 @@ vector<EdgeSegment> EdgeSegmentator::extractFeatures (GrayImage *src, double thr
 	features = segments1;
 	features.insert(features.end(),segments2.begin(),segments2.end());
 
+	//raèuna kut izmeğu trenutnog segmenta i prethodnog
+	double alpha, beta;
+	alpha = features[features.size()-1].getAngle();
+	beta = features[0].getAngle();
+	features[0].setAngle_A(alpha - beta);
+	for (int i = 1; i<features.size(); i++)
+	{
+		alpha = features[i-1].getAngle();
+		beta = features[i].getAngle();
+		features[i].setAngle_A(alpha - beta);
+	}
 	return features;
 }
 

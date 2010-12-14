@@ -21,6 +21,10 @@ vector<EdgeSegment> GetBestHyp(int numOfHyp, vector<EdgeSegment> &segments){
 	
 	sort( segments.begin(), segments.end(), segmentsCmp );
 
+	if (segments.size()<numOfHyp)//ako ima manje od 10 lin. segmenata
+	{
+		numOfHyp = segments.size();
+	}
 	for (int i = 0; i <numOfHyp; i++)  {
 	bestHyp.push_back(segments[i]);
 	}
