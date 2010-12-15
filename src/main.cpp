@@ -98,8 +98,8 @@ int main() {
 
 		sceneSegments.push_back(longestSegs);
 	}
-	imageID = "0102";
-	string fileNameS = "../baza/0102.jpg";
+	imageID = "0405";
+	string fileNameS = "../baza/0405.jpg";
 	string fileNameSexit = "../results/testSrc.jpg";
 	char *fileName = (char*)fileNameS.c_str();
 	char *fileNameexit = (char*)fileNameSexit.c_str();
@@ -132,6 +132,7 @@ int main() {
 	longestSegs  = GetLongestSegs(numOfSeg_scene, segments); 
 
 	vector<Hypothesis> CompHyps;  //kompatibilne hipoteze
+	
 	for ( int i = 0; i < longestSegs.size(); i++)
 	{
 		for ( int j = 0; j < sceneSegments.size(); j++)
