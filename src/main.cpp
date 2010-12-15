@@ -20,6 +20,7 @@ int main() {
 	string imageID;
 	int numOfSeg_model = 10;
 	int numOfSeg_scene = 20;
+	int numOfHyp = 20;				//broj hipoteza koje dalje evaluiramo
 	int numOfShapes = 12;			//broj oblika u bazi
 	double tresholdAngle = 30*(PI/280);		//mjera sliènosti kuteva kod provjere kompatibilnosti segmenata
 	double tresholdLength = 0.3;	//mjera sliènosti duljina kod provjere kompatibilnosti segmenata
@@ -150,6 +151,9 @@ int main() {
 			}
 		}
 	}
+
+	vector<Hypothesis> BestHyps = getBestHyp(numOfHyp, CompHyps); 
+	
 
 
 	return 1;
