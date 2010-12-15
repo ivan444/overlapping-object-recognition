@@ -23,7 +23,7 @@ vector<EdgeSegment> GetLongestSegs(int numOfSeg, vector<EdgeSegment> &segments){
 	
 	sort( segments.begin(), segments.end(), segmentsCmp );
 
-	if (segments.size()<numOfSeg)//ako ima manje od 10 lin. segmenata
+	if (segments.size()< numOfSeg)//ako ima manje od 10 lin. segmenata
 	{
 		numOfSeg = segments.size();
 	}
@@ -34,30 +34,40 @@ vector<EdgeSegment> GetLongestSegs(int numOfSeg, vector<EdgeSegment> &segments){
 	return bestHyp;
 }
 
-bool checkCompatibility(EdgeSegment M, EdgeSegment S, double tresholdAngle, double tresholdLength)
+bool checkCompatibility(EdgeSegment M, EdgeSegment S, double treshAngle, double treshLength, double k0, double &A, double &r)
 {
-	double angleComp = fabs(M.getAngle_A() - S.getAngle_A());
-	double lengthComp = fabs(M.getLength() - S.getLength());
+	A = fabs(M.getAngle_A() - S.getAngle_A());
+	r = fabs(M.getLength() - S.getLength());
 
-	if (angleComp  > tresholdAngle)
+	if (A  > treshAngle)
 		return false;
-	else if (lengthComp > tresholdLength)
+	else if (r - k0 > k0*treshLength)
 		return false;
 	else
 		return true;
 }
 
-bool GenerateErrCovMatrix(EdgeSegment M, EdgeSegment S, double tresholdAngle, double tresholdLength)
+bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, double tresholdAngle, double tresholdLength)
 {
-	double k0 = S.getLength() - M.getLength();
+	double A = 0;
+	double r = 0;
+	double k0 = fabs(S.getLength()/M.getLength());
 	double angle = S.getAngle() - M.getAngle();
 	double tx0 = S.getMiddleX() - k0*(M.getMiddleX()*cos(angle) - M.getMiddleY()*sin(angle));
 	double ty0 = S.getMiddleY() - k0*(M.getMiddleX()*sin(angle) - M.getMiddleY()*cos(angle));
 
-	bool compatible = checkCompatibility(M, S, tresholdAngle, tresholdLength*k0);
+	bool compatible = checkCompatibility(M, S, tresholdAngle, tresholdLength, k0, A, r);
 
 	if (!compatible)
 		return false;
 
-	//paramVector v0(ko, angle, tx, ty);
+	paramVector v0(k0, angle, tx0, ty0);
+
+	hypothesis.setV(v0);
+	hypothesis.setMseg(M);
+	hypothesis.setSseg(S);
+	hypothesis.setAngleComp(A);
+	hypothesis.setLengthComp(r);
+
+	return true;
 }

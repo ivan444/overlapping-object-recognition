@@ -4,12 +4,9 @@
 #include "math.h"
 #include "openCVJpegIO.h"
 #include "edgeSegmentator.h"
-//#include "paramVector.h"
 
 
 using namespace std;
-
-vector<EdgeSegment> GetLongestSegs(int numOfHyp, vector<EdgeSegment> &segments);
 
 class paramVector
 {
@@ -22,6 +19,7 @@ private:
 	double k0cos;
 
 public:
+	paramVector(){}
 	paramVector(double k, double ang, double tx, double ty){
 		k0 = k;
 		angle = ang;
@@ -37,23 +35,39 @@ public:
 	
 };
 
-//class Hypothesis
-//{
-//private:
-//	paramVector v;
-//	double angleComp;
-//	double lengthComp;
-//
-//public:
-//	Hypothesis(paramVector vec, double ang, double length){
-//		v=vec;
-//		angleComp = ang;
-//		lengthComp = length;
-//	}
-//
-//	~Hypothesis(){}
-//	paramVector getV(){return v;}
-//	double getAngleComp(){return angleComp;}
-//	double getLengthComp(){return angleComp;}
-//	
-//};
+class Hypothesis
+{
+private:
+	paramVector v;
+	EdgeSegment Mseg;
+	EdgeSegment Sseg;
+	double angleComp;
+	double lengthComp;
+
+public:
+	Hypothesis(){}
+	Hypothesis(paramVector vec, double ang, double length, EdgeSegment M, EdgeSegment S){
+		v=vec;
+		angleComp = ang;
+		lengthComp = length;
+		Mseg = M;
+		Sseg = S;
+	}
+
+	~Hypothesis(){}
+	paramVector getV(){return v;}
+	double getAngleComp(){return angleComp;}
+	double getLengthComp(){return angleComp;}
+	EdgeSegment getMseg(){return Mseg;}
+	EdgeSegment getSseg(){return Sseg;}
+
+	void setV(paramVector value){v=value;}
+	void setMseg(EdgeSegment value){Mseg=value;}
+	void setSseg(EdgeSegment value){Sseg=value;}
+	void setAngleComp(double value){angleComp=value;}
+	void setLengthComp(double value){lengthComp=value;}
+	
+};
+
+vector<EdgeSegment> GetLongestSegs(int numOfHyp, vector<EdgeSegment> &segments);
+bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, double tresholdAngle, double tresholdLength);

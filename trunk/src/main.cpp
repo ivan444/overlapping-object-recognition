@@ -16,12 +16,13 @@ int main() {
 	
 	cout << "Hello\n";
 	cout << (-1%3) << endl;
-	
+	const double PI = 3.141592;
+	string imageID;
 	int numOfSeg_model = 10;
 	int numOfSeg_scene = 20;
 	int numOfShapes = 12;			//broj oblika u bazi
-	double tresholdAngle = 30;		//mjera sliènosti kuteva kod provjere kompatibilnosti segmenata
-
+	double tresholdAngle = 30*(PI/280);		//mjera sliènosti kuteva kod provjere kompatibilnosti segmenata
+	double tresholdLength = 0.3;	//mjera sliènosti duljina kod provjere kompatibilnosti segmenata
 	vector<vector<EdgeSegment>> sceneSegments;	//segmenti scene
 
 	ImageIO *io = new JpegIO();
@@ -76,13 +77,14 @@ int main() {
 	for (int i = 1; i <= numOfShapes; i++)
 	{
 		char s[5];
-		itoa(i, s, 10);
+		_itoa_s(i, s, 10);
 
 		string fileRead(s);
 		if (i < 10)
 			fileRead = '0' + fileRead;
 
 		fileRead = fileRead + "01.jpg";
+		imageID = fileRead;
 		fileRead = "../baza/" + fileRead;
 		cout <<"reading " << fileRead <<endl;
 		img = io->read((char*) fileRead.c_str());
@@ -91,12 +93,12 @@ int main() {
 		GrayImage *gImg = bf->applyFilterC2G(img);
 		delete img;
 		EdgeSegmentator f;
-		segments = f.extractFeatures(gImg, 3);
+		segments = f.extractFeatures(gImg, 3, imageID);
 		longestSegs = GetLongestSegs(numOfSeg_scene, segments); 
 
 		sceneSegments.push_back(longestSegs);
 	}
-
+	imageID = "0102";
 	string fileNameS = "../baza/0102.jpg";
 	string fileNameSexit = "../results/testSrc.jpg";
 	char *fileName = (char*)fileNameS.c_str();
@@ -111,8 +113,8 @@ int main() {
 	GrayImage* bsImg = ed->sobel(img,200);
 	GrayImage* bfImg = ed->boundaryFollower(fImage);
 
-
-	segments = f.extractFeatures(fImage, 3);
+	
+	segments = f.extractFeatures(fImage, 3, imageID);
 	
 	ColorImage *cImg = annotate(fImage, segments);
 
@@ -129,8 +131,24 @@ int main() {
 	
 	longestSegs  = GetLongestSegs(numOfSeg_scene, segments); 
 
+	vector<Hypothesis> CompHyps;  //kompatibilne hipoteze
+	for ( int i = 0; i < longestSegs.size(); i++)
+	{
+		for ( int j = 0; j < sceneSegments.size(); j++)
+		{
+			for ( int k = 0; k < sceneSegments[j].size(); k++)
+			{
+				Hypothesis hypothesis;
 
+				bool compatible = GenerateErrCovMatrix(hypothesis,  longestSegs[i], sceneSegments[j][k], tresholdAngle, tresholdLength);
 
+				if (compatible)
+				{
+					CompHyps.push_back(hypothesis);
+				}
+			}
+		}
+	}
 
 
 	return 1;

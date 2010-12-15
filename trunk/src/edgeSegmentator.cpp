@@ -5,7 +5,7 @@
 EdgeSegmentator::EdgeSegmentator(){}
 EdgeSegmentator::~EdgeSegmentator(){}
 
-vector<EdgeSegment> EdgeSegmentator::extractFeatures (GrayImage *src, double threshold)
+vector<EdgeSegment> EdgeSegmentator::extractFeatures (GrayImage *src, double threshold, string id)
 {
 	vector<EdgeSegment> features;
 	//GrayImage *dst;
@@ -25,8 +25,8 @@ vector<EdgeSegment> EdgeSegmentator::extractFeatures (GrayImage *src, double thr
 
 	
 	//divide and conquer edge segmentation
-	vector<EdgeSegment> segments1 = this->divideAndConquer(threshold, points1);
-	vector<EdgeSegment> segments2 = this->divideAndConquer(threshold,  points2);
+	vector<EdgeSegment> segments1 = this->divideAndConquer(threshold, points1, id);
+	vector<EdgeSegment> segments2 = this->divideAndConquer(threshold,  points2, id);
 	features = segments1;
 	features.insert(features.end(),segments2.begin(),segments2.end());
 
@@ -101,9 +101,9 @@ vector<PixelCoordinates> EdgeSegmentator::followBoundary(GrayImage *origImg,
 
 
 
-vector<EdgeSegment> EdgeSegmentator::divideAndConquer(double threshold,  vector<PixelCoordinates> &points)
+vector<EdgeSegment> EdgeSegmentator::divideAndConquer(double threshold,  vector<PixelCoordinates> &points, string id)
 {
-	EdgeSegment segment(points[0], points[points.size()-1]);
+	EdgeSegment segment(points[0], points[points.size()-1], id);
 	double dx = ((int) segment.getLast().x)- ((int) segment.getFirst().x);
 	double dy = ((int) segment.getLast().y)- ((int) segment.getFirst().y);
 	double a = dy;
@@ -134,8 +134,8 @@ vector<EdgeSegment> EdgeSegmentator::divideAndConquer(double threshold,  vector<
 		points1.insert(points1.end(), points.begin(), points.begin() + iMax+1);
 		points2.insert(points2.end(), points.begin()+iMax, points.end());
 		//points2.push_back(points[0]);
-		vector<EdgeSegment> segs1 = divideAndConquer(threshold, points1);
-		vector<EdgeSegment> segs2 = divideAndConquer(threshold, points2);
+		vector<EdgeSegment> segs1 = divideAndConquer(threshold, points1, id);
+		vector<EdgeSegment> segs2 = divideAndConquer(threshold, points2, id);
 		segments = segs1;
 		segments.insert(segments.end(),segs2.begin(),segs2.end());
 		//if (segs2.back().getAngle() != segments.back().getAngle())
