@@ -19,7 +19,7 @@ bool segmentsCmp( const EdgeSegment &a, const EdgeSegment &b ){
 
 vector<EdgeSegment> GetLongestSegs(int numOfSeg, vector<EdgeSegment> &segments){
 	
-	vector<EdgeSegment> bestHyp;
+	vector<EdgeSegment> longestSegs;
 	
 	sort( segments.begin(), segments.end(), segmentsCmp );
 
@@ -28,10 +28,10 @@ vector<EdgeSegment> GetLongestSegs(int numOfSeg, vector<EdgeSegment> &segments){
 		numOfSeg = segments.size();
 	}
 	for (int i = 0; i <numOfSeg; i++)  {
-	bestHyp.push_back(segments[i]);
+	longestSegs.push_back(segments[i]);
 	}
 
-	return bestHyp;
+	return longestSegs;
 }
 
 bool checkCompatibility(EdgeSegment M, EdgeSegment S, double treshAngle, double treshLength, double k0, double &A, double &r)
@@ -70,4 +70,26 @@ bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, 
 	hypothesis.setLengthComp(r);
 
 	return true;
+}
+
+
+bool hypothesisCmp(  Hypothesis &a,  Hypothesis &b ){
+		return (a.getAngleComp()+a.getLengthComp() > a.getAngleComp()+a.getLengthComp());
+}
+
+vector<Hypothesis> getBestHyp(int numOfHyp, vector<Hypothesis>  &hyps){
+	
+	vector<Hypothesis> bestHyps;
+	
+	sort( hyps.begin(), hyps.end(), hypothesisCmp );
+
+	if (hyps.size()< numOfHyp)
+	{
+		numOfHyp = hyps.size();
+	}
+	for (int i = 0; i <numOfHyp; i++)  {
+	bestHyps.push_back(hyps[i]);
+	}
+
+	return bestHyps;
 }

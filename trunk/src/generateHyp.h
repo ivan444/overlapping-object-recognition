@@ -71,3 +71,4 @@ public:
 
 vector<EdgeSegment> GetLongestSegs(int numOfHyp, vector<EdgeSegment> &segments);
 bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, double tresholdAngle, double tresholdLength);
+vector<Hypothesis> getBestHyp(int numOfHyp, vector<Hypothesis>  &hyps);
