@@ -1,3 +1,6 @@
+#ifndef _GEN_HYP_H
+#define _GEN_HYP_H
+
 #include <iostream>
 #include <string>
 #include "imageIO.h"
@@ -8,30 +11,33 @@
 
 using namespace std;
 
+int round(double x);
+
 class paramVector
 {
 private:
-	double k0;
+	double k;
 	double angle;
-	double tx0;
-	double ty0;
-	double k0sin;
-	double k0cos;
+	double tx;
+	double ty;
+	double kSin;
+	double kCos;
 
 public:
 	paramVector(){}
-	paramVector(double k, double ang, double tx, double ty){
-		k0 = k;
-		angle = ang;
-		tx0 = tx;
-		ty0 = ty;
-		k0sin = k0 * sin(angle);
-		k0cos = k0 * cos(angle);
+	paramVector(double _k, double _ang, double _tx, double _ty){
+		k = _k;
+		angle = _ang;
+		tx = _tx;
+		ty = _ty;
+		kSin = k * sin(angle);
+		kCos = k * cos(angle);
 	}
 
 	~paramVector(){}
-	double getK0sin(){return k0sin;}
-	double getK0cos(){return k0cos;}
+	double getKSin(){return kSin;}
+	double getKCos(){return kCos;}
+	EdgeSegment transform(EdgeSegment &orig);
 	
 };
 
@@ -72,3 +78,5 @@ public:
 vector<EdgeSegment> GetLongestSegs(int numOfHyp, vector<EdgeSegment> &segments);
 bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, double tresholdAngle, double tresholdLength);
 vector<Hypothesis> getBestHyp(int numOfHyp, vector<Hypothesis>  &hyps);
+
+#endif

@@ -41,8 +41,22 @@ public:
 	double getLength()const{return length;}
 	double getMiddleX (){return middleX;}
 	double getMiddleY() {return middleY;}
+	string getImagrID(){ return imagrID;}
 	PixelCoordinates getFirst() {return first;}
 	PixelCoordinates getLast() {return last;}
+
+	/*EdgeSegment& operator= (EdgeSegment &seg)
+	{
+		angle = seg.angle;
+		angle_A = seg.angle_A;
+		length = seg.length;
+		middleX = seg.middleX;
+		middleY = seg.middleY;
+		first = seg.first;
+		last = seg.last;
+		imagrID = "transform" + seg.imagrID;
+		return *this;
+	}*/
 };
 
 class EdgeSegmentator
