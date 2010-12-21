@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cmath>
 
+
+
 EdgeSegmentator::EdgeSegmentator(){}
 EdgeSegmentator::~EdgeSegmentator(){}
 

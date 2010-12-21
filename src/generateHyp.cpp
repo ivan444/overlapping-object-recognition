@@ -3,15 +3,49 @@
 #include "imageIO.h"
 #include "openCVJpegIO.h"
 #include "edgeSegmentator.h"
-#include "paramVector.h"
+//#include "paramVector.h"
 #include "generateHyp.h"
 #include "math.h"
+#include "image.h"
 
 
 using namespace std;
 
+int round(double x)
+{
+	int intX = (int) x;
+	x -= (double) intX;
+	if (x < 0.5)
+		return intX;
+	else
+		return intX+1;
+};
 
-using namespace std;
+EdgeSegment paramVector::transform(EdgeSegment &orig)
+{
+	PixelCoordinates first = orig.getFirst();
+	PixelCoordinates last = orig.getLast();
+	double x = (double)first.x;
+	double y = (double)first.y;
+	x = tx + x*kCos - y*kSin;
+	y = ty + x*kSin + y*kCos;
+	PixelCoordinates tFirst;
+	tFirst.x = (unsigned int) round (x);
+	tFirst.y = (unsigned int) round (y);
+
+	x = (double)last.x;
+	y = (double)last.y;
+	x = tx + x*kCos - y*kSin;
+	y = ty + x*kSin + y*kCos;
+	PixelCoordinates tLast;
+	tLast.x = (unsigned int) round (x);
+	tLast.y = (unsigned int) round (y);
+
+	EdgeSegment result(tFirst,tLast, "transform" + orig.getImagrID());
+
+
+	return result;
+}
 
 bool segmentsCmp( const EdgeSegment &a, const EdgeSegment &b ){
 		return (a.getLength() > b.getLength());
