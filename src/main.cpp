@@ -152,9 +152,52 @@ int main() {
 		}
 	}
 
-	vector<Hypothesis> BestHyps = getBestHyp(numOfHyp, CompHyps); 
-	
+	printf("Broj hipoteza: %d\n", CompHyps.size());
+	/*for (int i = 0; i < CompHyps.size(); i++) {
+		cout << CompHyps[i].getSseg().getImagrID() << endl;
+	}*/
 
+	vector<Hypothesis> BestHyps = getBestHyp(numOfHyp, CompHyps); 
+	printf("Best hipot: %d\n", BestHyps.size());
+	for (int i = 0; i < BestHyps.size(); i++) {
+		string orgSceneFile = "../baza/";
+		string orgModelFile = "../baza/";
+		orgSceneFile.append(BestHyps[i].getSseg().getImagrID());
+		orgModelFile.append(BestHyps[i].getMseg().getImagrID());
+		orgModelFile.append(".jpg");
+
+		cout << "reading: " << orgModelFile << endl;
+		ColorImage *orgModelImg = io->read((char*)orgModelFile.c_str());
+		GrayImage *gModelImage = bf->applyFilterC2G(orgModelImg);
+
+		cout << "reading: " << orgSceneFile << endl;
+		ColorImage *orgSceneImg = io->read((char*)orgSceneFile.c_str());
+		GrayImage *gSceneImage = bf->applyFilterC2G(orgSceneImg);
+
+		vector<EdgeSegment> mSegments(1);
+		vector<EdgeSegment> sSegments(1);
+
+		cout << "Pripremanje segmenata!"<< endl;
+		mSegments.push_back(BestHyps[i].getMseg());
+		sSegments.push_back(BestHyps[i].getSseg());
+
+		cout << "Anotiranje!"<< endl;
+		ColorImage *sAnotImg = annotate(gSceneImage, sSegments);
+		ColorImage *mAnotImg = annotate(gModelImage, mSegments);
+
+		char num[10];
+		itoa(i, num, 10);
+
+		cout << "Spremanje!" << endl;
+		orgSceneFile.append(num);
+		orgSceneFile.append(".jpg");
+		io->write(sAnotImg, (char*)orgSceneFile.c_str());
+
+		orgModelFile.append(num);
+		orgModelFile.append(".jpg");
+		io->write(mAnotImg, (char*)orgModelFile.c_str());
+		
+	}
 
 	return 1;
 }

@@ -51,6 +51,14 @@ ColorImage* annotate(GrayImage *gImg, vector<EdgeSegment> &lines)
 		int y0 = lines[i].getFirst().y;
 		int x1 = lines[i].getLast().x;
 		int y1 = lines[i].getLast().y;
+		// Negdje je greska... ovo je quick fix:
+		if ((x0 < 0 || x0 > width)
+			|| (x1 < 0 || x1 > width)
+			|| (y0 < 0 || y0 > height)
+			|| (y1 < 0 || y1 > height)) {
+				continue;
+		}
+
 		bool steep = 0;
 		if ( (abs(y1-y0)) > (abs(x1-x0)))
 		{
