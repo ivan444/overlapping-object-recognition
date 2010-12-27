@@ -88,7 +88,7 @@ bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, 
 	double k0 = fabs(S.getLength()/M.getLength());
 	double angle = S.getAngle() - M.getAngle();
 	double tx0 = S.getMiddleX() - k0*(M.getMiddleX()*cos(angle) - M.getMiddleY()*sin(angle));
-	double ty0 = S.getMiddleY() - k0*(M.getMiddleX()*sin(angle) - M.getMiddleY()*cos(angle));
+	double ty0 = S.getMiddleY() - k0*(M.getMiddleX()*sin(angle) + M.getMiddleY()*cos(angle));
 
 	bool compatible = checkCompatibility(M, S, tresholdAngle, tresholdLength, k0, A, r);
 
