@@ -136,27 +136,34 @@ double sumLength( std::vector<EdgeSegment> &ss)
 /*int match(paramVector v,
 		  std::vector<EdgeSegment> &scene, std::vector<EdgeSegment> &model,
 		  int startSegmentModel)*/
-double match(Hypothesis &initH,
-		  std::vector<EdgeSegment> &scene, std::vector<EdgeSegment> &model)
+double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
+			 std::vector<EdgeSegment> &model,
+			 std::vector<int> &matchedScene)
 {
+	matchedScene.clear();
 	paramVector v = initH.getV();
 	int startSegmentModel = findSegment(initH.getMseg(), model);
-	if(startSegmentModel == -1)
+	int startSceneModel = findSegment(initH.getSseg(), scene);
+	if(startSegmentModel == -1 || startSceneModel == -1)
 		return -1;
-	int direction = 1;
-	int step = 1;
-	int i;
-	int iOffset = 0;
+
 	Hypothesis H;
 	H.setMatrixS(initH.getMatrixS());
 	H.setV(initH.getV());
 	H.setMseg(initH.getMseg());
 	H.setSseg(initH.getSseg());
+	matchedScene.push_back(startSceneModel);
+
 	double lMean = avgLength (model);
 	std::vector<EdgeSegment> matchedModel;
-	double sumModel = sum(model);
+	double sumModel = sumLength(model);
 	double sumMatchedModel = 0.0;
 	double Qi = 0;
+
+	int direction = 1;
+	int step = 1;
+	int i;
+	int iOffset = 0;
 	while(1)
 	{
 		if (direction == 1)
@@ -209,8 +216,9 @@ double match(Hypothesis &initH,
 		if (dMin <1)
 		{
 			H.setMseg(Mi);
-			H.setSseg(scene[jMin);
-			sumMatchedModel += Mi.length();
+			H.setSseg(scene[jMin]);
+			matchedScene.push_back(jMin);
+			sumMatchedModel += Mi.getLength();
 			double Ri = updateBasic(H, lMean);
 			Qi = sumMatchedModel/sumModel;
 		}
