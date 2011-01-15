@@ -34,7 +34,7 @@ double updateBasic(Hypothesis &H, double lMean)
 	// stvori Yi
 	matrix<double> Yi(2,1);
 	Yi(0,0) = si.getMiddleX();
-	Yi(0,1) = si.getMiddleY();
+	Yi(1,0) = si.getMiddleY();
 	//stvori Ci
 	matrix<double> Ci(2,4);
 	Ci(0,0) = mi.getMiddleX(); Ci(0,1) = -mi.getMiddleY(); Ci(0,2) = 1; Ci(0,3) = 0;
@@ -163,22 +163,26 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 	int direction = 1;
 	int step = 1;
 	int i;
+	int iLast = 0;
 	int iOffset = 0;
 	while(1)
 	{
 		if (direction == 1)
 		{
 			iOffset+=step;
-			i = startSegmentModel + iOffset;
+			i = startSegmentModel + iOffset + model.size();
 			i= i% model.size();
 			direction = -1;
 		}
 		else if (direction == -1)
 		{
-			i = startSegmentModel - iOffset;
+			i = startSegmentModel - iOffset + model.size();
 			i= i% model.size();
 			direction = 1;
 		}
+		if (i == iLast)
+			break;
+		iLast = i;
 
 		EdgeSegment Mi = model[i];
 		EdgeSegment tMi = v.transform(Mi);
@@ -222,6 +226,7 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 			double Ri = updateBasic(H, lMean);
 			Qi = sumMatchedModel/sumModel;
 		}
+		
 	}
 	sort(matchedScene.begin(), matchedScene.end());
 	return Qi;

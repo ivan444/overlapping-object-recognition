@@ -8,6 +8,7 @@
 #include "openCVJpegIO.h"
 #include "edgeSegmentator.h"
 #include <boost/numeric/ublas/matrix.hpp>
+#include "matrix/math_tnt_la.hpp"
 
 
 using namespace std;
@@ -74,7 +75,7 @@ public:
 	~Hypothesis(){}
 	paramVector getV(){return v;}
 	double getAngleComp(){return angleComp;}
-	double getLengthComp(){return angleComp;}
+	double getLengthComp(){return lengthComp;}
 	EdgeSegment getMseg(){return Mseg;}
 	EdgeSegment getSseg(){return Sseg;}
 	ublas::matrix<double> &getMatrixS() {return matrixS;}
@@ -94,6 +95,6 @@ vector<Hypothesis> getBestHyp(int numOfHyp, vector<Hypothesis>  &hyps);
 
 double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 			 std::vector<EdgeSegment> &model,
-			 std::vector<EdgeSegment> &matchedScene);
+			 std::vector<int> &matchedScene);
 
 #endif
