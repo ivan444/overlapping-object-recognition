@@ -7,9 +7,12 @@
 #include "math.h"
 #include "openCVJpegIO.h"
 #include "edgeSegmentator.h"
+#include <boost/numeric/ublas/matrix.hpp>
 
 
 using namespace std;
+
+using namespace boost::numeric;
 
 int round(double x);
 
@@ -37,6 +40,13 @@ public:
 	~paramVector(){}
 	double getKSin(){return kSin;}
 	double getKCos(){return kCos;}
+	double getTx(){return tx;}
+	double getTy(){return ty;}
+
+	/*double setKSin(){return kSin;}
+	double setKCos(){return kCos;}
+	double setTx(){return tx;}
+	double setTy(){return ty;}*/
 	EdgeSegment transform(EdgeSegment &orig);
 	
 };
@@ -49,6 +59,7 @@ private:
 	EdgeSegment Sseg;
 	double angleComp;
 	double lengthComp;
+	ublas::matrix<double> matrixS;
 
 public:
 	Hypothesis(){}
@@ -66,17 +77,21 @@ public:
 	double getLengthComp(){return angleComp;}
 	EdgeSegment getMseg(){return Mseg;}
 	EdgeSegment getSseg(){return Sseg;}
+	ublas::matrix<double> &getMatrixS() {return matrixS;}
 
 	void setV(paramVector value){v=value;}
 	void setMseg(EdgeSegment value){Mseg=value;}
 	void setSseg(EdgeSegment value){Sseg=value;}
 	void setAngleComp(double value){angleComp=value;}
 	void setLengthComp(double value){lengthComp=value;}
+	void setMatrixS(ublas::matrix<double> value){matrixS=value;}
 	
 };
 
 vector<EdgeSegment> GetLongestSegs(int numOfHyp, vector<EdgeSegment> &segments);
 bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, double tresholdAngle, double tresholdLength);
 vector<Hypothesis> getBestHyp(int numOfHyp, vector<Hypothesis>  &hyps);
+
+int match(Hypothesis &initH, std::vector<EdgeSegment> &scene, std::vector<EdgeSegment> &model);
 
 #endif
