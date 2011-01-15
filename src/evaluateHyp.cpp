@@ -223,6 +223,7 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 			Qi = sumMatchedModel/sumModel;
 		}
 	}
+	sort(matchedScene.begin(), matchedScene.end());
 	return Qi;
 }
 
