@@ -20,11 +20,12 @@ int main() {
 	string imageID;
 	int numOfSeg_model = 10;
 	int numOfSeg_scene = 20;
-	int numOfHyp = 20;				//broj hipoteza koje dalje evaluiramo
+	int numOfHyp = 20*5;				//broj hipoteza koje dalje evaluiramo
 	int numOfShapes = 12;			//broj oblika u bazi
 	double tresholdAngle = 30*(PI/280);		//mjera sliènosti kuteva kod provjere kompatibilnosti segmenata
 	double tresholdLength = 0.3;	//mjera sliènosti duljina kod provjere kompatibilnosti segmenata
-	vector<vector<EdgeSegment>> sceneSegments;	//segmenti scene
+	vector<vector<EdgeSegment>> modelSegments;	//najduži segmenti svih modela
+	vector<vector<EdgeSegment>> modelAllSegments;	//svi segmenti svih modela
 
 	ImageIO *io = new JpegIO();
 	ColorImage *img = 0;
@@ -74,7 +75,7 @@ int main() {
 	//}
 
 
-	//spremanje segmenata scene (primjera za uèenje)
+	//spremanje segmenata MODELA (primjera za uèenje)
 	for (int i = 1; i <= numOfShapes; i++)
 	{
 		char s[5];
@@ -97,7 +98,8 @@ int main() {
 		segments = f.extractFeatures(gImg, 3, imageID);
 		longestSegs = GetLongestSegs(numOfSeg_scene, segments); 
 
-		sceneSegments.push_back(longestSegs);
+		modelSegments.push_back(longestSegs);
+		modelAllSegments.push_back(segments);
 	}
 	imageID = "0405";
 	string fileNameS = "../baza/0405.jpg";
@@ -136,13 +138,13 @@ int main() {
 	
 	for ( int i = 0; i < longestSegs.size(); i++)
 	{
-		for ( int j = 0; j < sceneSegments.size(); j++)
+		for ( int j = 0; j < modelSegments.size(); j++)
 		{
-			for ( int k = 0; k < sceneSegments[j].size(); k++)
+			for ( int k = 0; k < modelSegments[j].size(); k++)
 			{
 				Hypothesis hypothesis;
 
-				bool compatible = GenerateErrCovMatrix(hypothesis,  longestSegs[i], sceneSegments[j][k], tresholdAngle, tresholdLength);
+				bool compatible = GenerateErrCovMatrix(hypothesis, modelSegments[j][k], longestSegs[i],tresholdAngle, tresholdLength);
 
 				if (compatible)
 				{
@@ -154,17 +156,20 @@ int main() {
 
 	printf("Broj hipoteza: %d\n", CompHyps.size());
 	/*for (int i = 0; i < CompHyps.size(); i++) {
-		cout << CompHyps[i].getSseg().getImagrID() << endl;
+		cout << CompHyps[i].getMseg().getImagrID() << endl;
 	}*/
 
 	vector<Hypothesis> BestHyps = getBestHyp(numOfHyp, CompHyps); 
-	/*printf("Best hipot: %d\n", BestHyps.size());
+	printf("Best hipot: %d\n", BestHyps.size());
 	for (int i = 0; i < BestHyps.size(); i++) {
+		cout << BestHyps[i].getMseg().getImagrID() << endl;
+	}
+	/*for (int i = 0; i < BestHyps.size(); i++) {
 		string orgSceneFile = "../baza/";
 		string orgModelFile = "../baza/";
 		orgSceneFile.append(BestHyps[i].getSseg().getImagrID());
 		orgModelFile.append(BestHyps[i].getMseg().getImagrID());
-		orgModelFile.append(".jpg");
+		orgSceneFile.append(".jpg");
 
 		cout << "reading: " << orgModelFile << endl;
 		ColorImage *orgModelImg = io->read((char*)orgModelFile.c_str());
@@ -174,8 +179,8 @@ int main() {
 		ColorImage *orgSceneImg = io->read((char*)orgSceneFile.c_str());
 		GrayImage *gSceneImage = bf->applyFilterC2G(orgSceneImg);
 
-		vector<EdgeSegment> mSegments(1);
-		vector<EdgeSegment> sSegments(1);
+		vector<EdgeSegment> mSegments;
+		vector<EdgeSegment> sSegments;
 
 		cout << "Pripremanje segmenata!"<< endl;
 		mSegments.push_back(BestHyps[i].getMseg());
@@ -197,7 +202,7 @@ int main() {
 		orgModelFile.append(".jpg");
 		io->write(mAnotImg, (char*)orgModelFile.c_str());
 		
-	}*/
+	}
 
 	//evaluacija hipoteza
 	double Qmax = 0.0;
@@ -206,10 +211,10 @@ int main() {
 	{
 		
 		std::vector<int> matchedScene;
-		int j = atoi (BestHyps[i].getSseg().getImagrID().c_str());
+		int j = atoi (BestHyps[i].getMseg().getImagrID().c_str());
 		j = (j/100) - 1;
-		cout << "\nEvaluating hypothesis: " << i <<" " << sceneSegments[j][0].getImagrID();
-		double Qi = match(BestHyps[i],sceneSegments[j], segments, matchedScene);
+		cout << "\nEvaluating hypothesis: " << i <<" " << modelAllSegments[j][0].getImagrID();
+		double Qi = match(BestHyps[i], segments, modelAllSegments[j], matchedScene);
 		if (Qi > Qmax)
 		{
 			iBest = i;
@@ -218,6 +223,6 @@ int main() {
 		cout << "\nQuality of hypothesis: " << Qi <<"\n";
 	}
 	cout << "\nBest hypothesis is: " << iBest;
-
+	*/
 	return 1;
 }

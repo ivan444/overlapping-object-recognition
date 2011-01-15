@@ -76,7 +76,7 @@ vector<EdgeSegment> GetLongestSegs(int numOfSeg, vector<EdgeSegment> &segments){
 bool checkCompatibility(EdgeSegment M, EdgeSegment S, double treshAngle, double treshLength, double k0, double &A, double &r)
 {
 	A = fabs(M.getAngle_A() - S.getAngle_A());
-	r = fabs(M.getLength() - S.getLength());
+	r = fabs(S.getLength()/ M.getLength());
 
 	if (A  > treshAngle)
 		return false;
@@ -121,8 +121,13 @@ bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, 
 
 
 bool hypothesisCmp(  Hypothesis &a,  Hypothesis &b ){
-		return (a.getAngleComp()+a.getLengthComp() > a.getAngleComp()+a.getLengthComp());
+		return (a.getAngleComp()+a.getLengthComp() > b.getAngleComp()+b.getLengthComp());
 }
+
+
+
+
+
 
 vector<Hypothesis> getBestHyp(int numOfHyp, vector<Hypothesis>  &hyps){
 	
@@ -137,6 +142,7 @@ vector<Hypothesis> getBestHyp(int numOfHyp, vector<Hypothesis>  &hyps){
 	for (int i = 0; i <numOfHyp; i++)  {
 	bestHyps.push_back(hyps[i]);
 	}
+	//bestHyps = hyps;
 
 	return bestHyps;
 }
