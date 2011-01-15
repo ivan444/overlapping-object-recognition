@@ -158,7 +158,7 @@ int main() {
 	}*/
 
 	vector<Hypothesis> BestHyps = getBestHyp(numOfHyp, CompHyps); 
-	printf("Best hipot: %d\n", BestHyps.size());
+	/*printf("Best hipot: %d\n", BestHyps.size());
 	for (int i = 0; i < BestHyps.size(); i++) {
 		string orgSceneFile = "../baza/";
 		string orgModelFile = "../baza/";
@@ -197,7 +197,27 @@ int main() {
 		orgModelFile.append(".jpg");
 		io->write(mAnotImg, (char*)orgModelFile.c_str());
 		
+	}*/
+
+	//evaluacija hipoteza
+	double Qmax = 0.0;
+	double iBest = -1;
+	for (int i = 0; i < BestHyps.size(); i++)
+	{
+		
+		std::vector<int> matchedScene;
+		int j = atoi (BestHyps[i].getSseg().getImagrID().c_str());
+		j = (j/100) - 1;
+		cout << "\nEvaluating hypothesis: " << i <<" " << sceneSegments[j][0].getImagrID();
+		double Qi = match(BestHyps[i],sceneSegments[j], segments, matchedScene);
+		if (Qi > Qmax)
+		{
+			iBest = i;
+			Qmax = Qi;
+		}
+		cout << "\nQuality of hypothesis: " << Qi <<"\n";
 	}
+	cout << "\nBest hypothesis is: " << iBest;
 
 	return 1;
 }

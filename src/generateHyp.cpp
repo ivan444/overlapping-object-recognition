@@ -9,6 +9,11 @@
 #include "image.h"
 
 
+#define sk 0.1
+#define sa 0.1
+#define sx 0.1
+#define sy 0.1
+
 using namespace std;
 
 int round(double x)
@@ -102,6 +107,14 @@ bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, 
 	hypothesis.setSseg(S);
 	hypothesis.setAngleComp(A);
 	hypothesis.setLengthComp(r);
+
+	ublas::matrix<double> matrixS = ublas::identity_matrix<double> (4);
+	matrixS(0,0) = k0*k0*sin(angle)*sin(angle)*sa*sa + cos(angle)*cos(angle)*sk*sk;
+	matrixS(1,1) = k0*k0*cos(angle)*cos(angle)*sa*sa + sin(angle)*sin(angle)*sk*sk;
+	matrixS(0,1) = matrixS(1,0) = sin(angle)*cos(angle)*(sk*sk - k0*k0*sa*sa);
+	matrixS(2,2) = sx*sx;
+	matrixS(3,3) = sy*sy;
+	hypothesis.setMatrixS(matrixS);
 
 	return true;
 }
