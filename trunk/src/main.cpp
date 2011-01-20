@@ -10,6 +10,11 @@
 
 using namespace std;
 
+bool hypothesisCmp2(  Hypothesis &a,  Hypothesis &b ){
+		//return (a.getAngleComp()+a.getLengthComp() > b.getAngleComp()+b.getLengthComp());
+	return (a.getQ() > b.getQ());
+}
+
 
 //kasnije: varirati broj segmenata u sceni koje uzimamo u obzir (model 10)
 int main() {
@@ -18,9 +23,10 @@ int main() {
 	cout << (-1%3) << endl;
 	const double PI = 3.141592;
 	string imageID;
-	int numOfSeg_model = 10;
+	int eFpar = 20;  // dozvoljena udaljenost tocke od segmenta prilikom segmentacije/divide and conquer
 	int numOfSeg_scene = 20;
-	int numOfHyp = 20*5;				//broj hipoteza koje dalje evaluiramo
+	int numOfSeg_model = 20;
+	int numOfHyp = 100;				//broj hipoteza koje dalje evaluiramo
 	int numOfShapes = 12;			//broj oblika u bazi
 	double tresholdAngle = 30*(PI/280);		//mjera sliènosti kuteva kod provjere kompatibilnosti segmenata
 	double tresholdLength = 0.3;	//mjera sliènosti duljina kod provjere kompatibilnosti segmenata
@@ -95,14 +101,14 @@ int main() {
 		GrayImage *gImg = bf->applyFilterC2G(img);
 		delete img;
 		EdgeSegmentator f;
-		segments = f.extractFeatures(gImg, 3, imageID);
-		longestSegs = GetLongestSegs(numOfSeg_scene, segments); 
+		segments = f.extractFeatures(gImg, eFpar, imageID);
+		longestSegs = GetLongestSegs(numOfSeg_model, segments); 
 
 		modelSegments.push_back(longestSegs);
 		modelAllSegments.push_back(segments);
 	}
-	imageID = "0405";
-	string fileNameS = "../baza/0405.jpg";
+	imageID = "0102";
+	string fileNameS = "../baza/0102.jpg";
 	string fileNameSexit = "../results/testSrc.jpg";
 	char *fileName = (char*)fileNameS.c_str();
 	char *fileNameexit = (char*)fileNameSexit.c_str();
@@ -117,7 +123,7 @@ int main() {
 	GrayImage* bfImg = ed->boundaryFollower(fImage);
 
 	
-	segments = f.extractFeatures(fImage, 3, imageID);
+	segments = f.extractFeatures(fImage, eFpar, imageID);
 	
 	ColorImage *cImg = annotate(fImage, segments);
 
@@ -202,27 +208,48 @@ int main() {
 		orgModelFile.append(".jpg");
 		io->write(mAnotImg, (char*)orgModelFile.c_str());
 		
-	}
+	}*/
 
 	//evaluacija hipoteza
 	double Qmax = 0.0;
 	double iBest = -1;
-	for (int i = 0; i < BestHyps.size(); i++)
+	string idBest = "";
+	for (int i = 0; i <BestHyps.size(); i++)
 	{
 		
 		std::vector<int> matchedScene;
 		int j = atoi (BestHyps[i].getMseg().getImagrID().c_str());
+		
 		j = (j/100) - 1;
-		cout << "\nEvaluating hypothesis: " << i <<" " << modelAllSegments[j][0].getImagrID();
+		//cout << "\nEvaluating hypothesis: " << i <<" " << modelAllSegments[j][0].getImagrID();
 		double Qi = match(BestHyps[i], segments, modelAllSegments[j], matchedScene);
 		if (Qi > Qmax)
 		{
 			iBest = i;
 			Qmax = Qi;
+			idBest = modelAllSegments[j][0].getImagrID();
 		}
-		cout << "\nQuality of hypothesis: " << Qi <<"\n";
+		//BestHyps[i]
+		BestHyps[i].setQ(Qi);
+		//cout << "\nQuality of hypothesis: " << Qi <<"\n";
 	}
-	cout << "\nBest hypothesis is: " << iBest;
-	*/
+
+	cout << "\nBest hypothesis is: " << iBest << ", " <<idBest;
+	cout << "\nBest quality is: " << Qmax;
+	cout << endl;
+	sort( BestHyps.begin(), BestHyps.end(), hypothesisCmp2 );
+	for (int i = 0; i < BestHyps.size(); i++)
+	{
+		cout << i << ". "<< BestHyps[i].getV().getTx() << "  "  << BestHyps[i].getV().getTy() <<"  "  << BestHyps[i].getV().getAngle() <<"  "  << BestHyps[i].getV().getK() << endl;
+		cout << BestHyps[i].getQ() << endl;
+	}
+	iBest = 0;
+	cout << "\nBest of the best\n";
+	cout << iBest << ". "<< BestHyps[iBest].getV().getTx() << "  "  << BestHyps[iBest].getV().getTy() <<"  "  << BestHyps[iBest].getV().getAngle() <<"  "  << BestHyps[iBest].getV().getK() << endl;
+	cout << BestHyps[iBest].getQ() << " "<< BestHyps[iBest].getMseg().getImagrID() << endl;
+	iBest = BestHyps.size()-1;
+	cout << "\nBest of the best try 2\n";
+	cout << iBest << ". "<< BestHyps[iBest].getV().getTx() << "  "  << BestHyps[iBest].getV().getTy() <<"  "  << BestHyps[iBest].getV().getAngle() <<"  "  << BestHyps[iBest].getV().getK() << endl;
+	cout << BestHyps[iBest].getQ() << " " << BestHyps[iBest].getMseg().getImagrID()<< endl;
 	return 1;
 }

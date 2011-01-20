@@ -43,6 +43,8 @@ public:
 	double getKCos(){return kCos;}
 	double getTx(){return tx;}
 	double getTy(){return ty;}
+	double getAngle(){return angle;}
+	double getK(){return k;}
 
 	/*double setKSin(){return kSin;}
 	double setKCos(){return kCos;}
@@ -61,6 +63,7 @@ private:
 	double angleComp;
 	double lengthComp;
 	ublas::matrix<double> matrixS;
+	double Q;
 
 public:
 	Hypothesis(){}
@@ -79,6 +82,7 @@ public:
 	EdgeSegment getMseg(){return Mseg;}
 	EdgeSegment getSseg(){return Sseg;}
 	ublas::matrix<double> &getMatrixS() {return matrixS;}
+	double getQ(){return Q;}
 
 	void setV(paramVector value){v=value;}
 	void setMseg(EdgeSegment value){Mseg=value;}
@@ -86,6 +90,7 @@ public:
 	void setAngleComp(double value){angleComp=value;}
 	void setLengthComp(double value){lengthComp=value;}
 	void setMatrixS(ublas::matrix<double> value){matrixS=value;}
+	void setQ(double value){Q=value;}
 	
 };
 
