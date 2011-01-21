@@ -13,6 +13,7 @@ class EdgeSegment
 private:
 	double angle;
 	double angle_A;
+	double angle_atan;
 	double length;
 	double middleX;
 	double middleY;
@@ -30,13 +31,18 @@ public:
 		double dy = ((int)last.y) - ((int)first.y);
 		length = sqrt(dx*dx + dy*dy);
 		angle = atan2(dy,dx);
+		angle_atan = atan(dy/dx);
 		angle_A=0;
 		imagrID = id;
 	}
 
 	~EdgeSegment(){}
+	/** Kut u odnosu na x-os. */
 	double getAngle(){return angle;}
+	/** Kut u odnosu na prethodni segment. */
 	double getAngle_A(){return angle_A;}
+	/** Kut u odnosu na x-os ali je dobiven funkcijom atan. */
+	double getAngle_atan(){return angle_atan;}
 	void setAngle_A(double value){angle_A=value;}
 	double getLength()const{return length;}
 	double getMiddleX (){return middleX;}
@@ -44,6 +50,24 @@ public:
 	string getImagrID(){ return imagrID;}
 	PixelCoordinates getFirst() {return first;}
 	PixelCoordinates getLast() {return last;}
+
+	void setFirst(unsigned int x, unsigned int y) {
+		first.x = x;
+		first.y = y;
+	}
+
+	void setLast(unsigned int x, unsigned int y) {
+		last.x = x;
+		last.y = y;
+	}
+
+	void setFirst(PixelCoordinates f) {
+		first = f;
+	}
+
+	void setLast(PixelCoordinates l) {
+		last = l;
+	}
 
 	/*EdgeSegment& operator= (EdgeSegment &seg)
 	{
@@ -65,7 +89,7 @@ class EdgeSegmentator
 public:
 	EdgeSegmentator();
 	~EdgeSegmentator();
-	vector<EdgeSegment> extractFeatures (GrayImage *src, double threshold, string id);
+	vector<EdgeSegment> extractFeatures (GrayImage *src, double threshold, string id, double angleThreshold);
 private:
 	vector<EdgeSegment> divideAndConquer( double threshold,  vector<PixelCoordinates> &points, string id);
 	vector<PixelCoordinates> borderFind(GrayImage *src);	//prepravljena edgeDetectors funkcija boundaryFollower

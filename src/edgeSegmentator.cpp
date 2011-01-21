@@ -2,12 +2,16 @@
 #include <iostream>
 #include <cmath>
 
-
+#define M_PI       3.14159265358979323846
 
 EdgeSegmentator::EdgeSegmentator(){}
 EdgeSegmentator::~EdgeSegmentator(){}
 
-vector<EdgeSegment> EdgeSegmentator::extractFeatures (GrayImage *src, double threshold, string id)
+bool compareDot(PixelCoordinates a, PixelCoordinates b) {
+	return abs((int)a.x - (int)b.x) < 3 && abs((int)a.y - (int)b.y) < 3;
+}
+
+vector<EdgeSegment> EdgeSegmentator::extractFeatures (GrayImage *src, double threshold, string id, double angleThreshold)
 {
 	vector<EdgeSegment> features;
 	//GrayImage *dst;
@@ -29,8 +33,46 @@ vector<EdgeSegment> EdgeSegmentator::extractFeatures (GrayImage *src, double thr
 	//divide and conquer edge segmentation
 	vector<EdgeSegment> segments1 = this->divideAndConquer(threshold, points1, id);
 	vector<EdgeSegment> segments2 = this->divideAndConquer(threshold,  points2, id);
+
+	// Spajanje segmenata koji se nalaze na istom pravcu
+	vector<int> segs2ToDelete;
+	for (int i = 0; i < segments1.size(); i++) {
+		for (int j = 0; j < segments2.size(); j++) {
+			double s1a = segments1[i].getAngle_atan() < 0 ? segments1[i].getAngle_atan() + M_PI : segments1[i].getAngle_atan();
+			double s2a = segments2[j].getAngle_atan() < 0 ? segments2[j].getAngle_atan() + M_PI : segments2[j].getAngle_atan();
+		
+			double diffS = fabs(s1a-s2a);
+
+			if(! (diffS < angleThreshold || fabs(diffS - M_PI) < angleThreshold))
+				continue;
+
+			if (compareDot(segments1[i].getFirst(), segments2[j].getFirst())) {
+				segments1[i].setFirst(segments2[j].getLast());
+				segs2ToDelete.push_back(j);
+
+			} else if (compareDot(segments1[i].getFirst(), segments2[j].getLast())) {
+				segments1[i].setFirst(segments2[j].getFirst());
+				segs2ToDelete.push_back(j);
+
+			} else if (compareDot(segments1[i].getLast(), segments2[j].getFirst())) {
+				segments1[i].setLast(segments2[j].getLast());
+				segs2ToDelete.push_back(j);
+
+			} else if (compareDot(segments1[i].getLast(), segments2[j].getLast())) {
+				segments1[i].setLast(segments2[j].getFirst());
+				segs2ToDelete.push_back(j);
+			}
+		}
+	}
+
+	for (int i = 0; i < segs2ToDelete.size(); i++) {
+		segments2.erase(segments2.begin()+segs2ToDelete[i]);
+	}
+
 	features = segments1;
 	features.insert(features.end(),segments2.begin(),segments2.end());
+
+	
 
 	//raèuna kut izmeðu trenutnog segmenta i prethodnog
 	double alpha, beta;
