@@ -51,6 +51,18 @@ ColorImage* annotate(GrayImage *gImg, vector<EdgeSegment> &lines)
 		int y0 = lines[i].getFirst().y;
 		int x1 = lines[i].getLast().x;
 		int y1 = lines[i].getLast().y;
+
+		ColorPixel edge;
+		edge.v2 = edge.v3 = 0;
+		edge.v1 = 255;
+		
+		for (int dx = -4; dx <= 4; dx++) {
+			for (int dy = -4; dy <= 4; dy++) {
+				cImg->set(x0+dx,y0+dy,edge);
+				cImg->set(x1+dx,y1+dy,edge);
+			}
+		}
+		
 		// Negdje je greska... ovo je quick fix:
 		if ((x0 < 0 || x0 > width)
 			|| (x1 < 0 || x1 > width)

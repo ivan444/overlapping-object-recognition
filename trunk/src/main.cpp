@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cstdlib>
 #include "imageIO.h"
 #include "openCVJpegIO.h"
 #include "binaryFilter.h"
@@ -15,6 +16,36 @@ bool hypothesisCmp2(  Hypothesis &a,  Hypothesis &b ){
 	return (a.getQ() > b.getQ());
 }
 
+/*
+ * Crtanje segmenata objekta i ispis njegovih podataka.
+ */
+void writePolys(vector<vector<EdgeSegment>> segments) {
+	for (int i = 0; i < segments.size(); i++) {
+		cout << "Model: " << segments[i][0].getImagrID() << ", broj segmenata: " << segments[i].size() << endl;
+		
+		string imgId = segments[i][0].getImagrID();
+		string outDir = "../anotirani/";
+		string inDir = "../baza/";
+
+		ImageIO *io = new JpegIO();
+		BinaryFilter* bf = new BinaryFilter(150);
+
+		ColorImage *orgModelImg = io->read((char*)(inDir+imgId).c_str());
+		GrayImage *gModelImage = bf->applyFilterC2G(orgModelImg);
+
+		cout << "Anotiranje!"<< endl;
+		ColorImage *mAnotImg = annotate(gModelImage, segments[i]);
+
+		char num[10];
+		itoa(i, num, 10);
+
+		cout << "Spremanje!" << endl;
+		string outFile = outDir + imgId;
+		outFile.append(num);
+		outFile.append(".jpg");
+		io->write(mAnotImg, (char*)outFile.c_str());		
+	}
+}
 
 //kasnije: varirati broj segmenata u sceni koje uzimamo u obzir (model 10)
 int main() {
@@ -23,7 +54,8 @@ int main() {
 	cout << (-1%3) << endl;
 	const double PI = 3.141592;
 	string imageID;
-	int eFpar = 20;  // dozvoljena udaljenost tocke od segmenta prilikom segmentacije/divide and conquer
+	double angleTreshold = 0.26179938779914943653855361527329;//0.17453292519943295769236907684886; // 10°
+	int eFpar = 10;  // dozvoljena udaljenost tocke od segmenta prilikom segmentacije/divide and conquer
 	int numOfSeg_scene = 20;
 	int numOfSeg_model = 20;
 	int numOfHyp = 100;				//broj hipoteza koje dalje evaluiramo
@@ -92,6 +124,7 @@ int main() {
 			fileRead = '0' + fileRead;
 
 		fileRead = fileRead + "01.jpg";
+		
 		imageID = fileRead;
 		fileRead = "../baza/" + fileRead;
 		cout <<"reading " << fileRead <<endl;
@@ -101,12 +134,15 @@ int main() {
 		GrayImage *gImg = bf->applyFilterC2G(img);
 		delete img;
 		EdgeSegmentator f;
-		segments = f.extractFeatures(gImg, eFpar, imageID);
+		segments = f.extractFeatures(gImg, eFpar, imageID, angleTreshold);
 		longestSegs = GetLongestSegs(numOfSeg_model, segments); 
 
 		modelSegments.push_back(longestSegs);
 		modelAllSegments.push_back(segments);
 	}
+
+	writePolys(modelAllSegments);
+
 	imageID = "0102";
 	string fileNameS = "../baza/0102.jpg";
 	string fileNameSexit = "../results/testSrc.jpg";
@@ -123,7 +159,7 @@ int main() {
 	GrayImage* bfImg = ed->boundaryFollower(fImage);
 
 	
-	segments = f.extractFeatures(fImage, eFpar, imageID);
+	segments = f.extractFeatures(fImage, eFpar, imageID, angleTreshold);
 	
 	ColorImage *cImg = annotate(fImage, segments);
 
@@ -251,5 +287,6 @@ int main() {
 	cout << "\nBest of the best try 2\n";
 	cout << iBest << ". "<< BestHyps[iBest].getV().getTx() << "  "  << BestHyps[iBest].getV().getTy() <<"  "  << BestHyps[iBest].getV().getAngle() <<"  "  << BestHyps[iBest].getV().getK() << endl;
 	cout << BestHyps[iBest].getQ() << " " << BestHyps[iBest].getMseg().getImagrID()<< endl;
+	 
 	return 1;
 }
