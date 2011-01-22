@@ -140,7 +140,8 @@ double sumLength( std::vector<EdgeSegment> &ss)
 		  int startSegmentModel)*/
 double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 			 std::vector<EdgeSegment> &model,
-			 std::vector<int> &matchedScene)
+			 std::vector<int> &matchedScene,
+			 std::vector<int> &matchedModelInd)
 {
 	matchedScene.clear();
 	paramVector v = initH.getV();
@@ -155,6 +156,7 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 	H.setMseg(initH.getMseg());
 	H.setSseg(initH.getSseg());
 	matchedScene.push_back(startSegmentScene);
+	matchedModelInd.push_back(startSegmentModel);
 
 	double lMean = avgLength (model);
 	std::vector<EdgeSegment> matchedModel;
@@ -203,7 +205,7 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 			double Dij = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
 			double lij = fabs((tMi.getLength()-Sj.getLength())/Sj.getLength());
 			
-			if(aij >= aMax)// || Dij >= DMax || lij >= lMax)
+			if(aij >= aMax || Dij >= DMax || lij >= lMax)
 			{
 				dij = 1.0;
 			}
@@ -225,6 +227,7 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 			H.setMseg(Mi);
 			H.setSseg(scene[jMin]);
 			matchedScene.push_back(jMin);
+			matchedModelInd.push_back(i);
 			sumMatchedModel += Mi.getLength();
 			double Ri = updateBasic(H, lMean);
 			Qi = sumMatchedModel/sumModel;

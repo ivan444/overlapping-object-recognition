@@ -59,9 +59,9 @@ int main() {
 	int eFpar = 10;  // dozvoljena udaljenost tocke od segmenta prilikom segmentacije/divide and conquer
 	int numOfSeg_scene = 20;
 	int numOfSeg_model = 20;
-	int numOfHyp = 100;				//broj hipoteza koje dalje evaluiramo
+	int numOfHyp = 10000;				//broj hipoteza koje dalje evaluiramo
 	int numOfShapes = 12;			//broj oblika u bazi
-	double tresholdAngle = 30*(PI/280);		//mjera sliènosti kuteva kod provjere kompatibilnosti segmenata
+	double tresholdAngle = 30*(PI/180);		//mjera sliènosti kuteva kod provjere kompatibilnosti segmenata
 	double tresholdLength = 0.3;	//mjera sliènosti duljina kod provjere kompatibilnosti segmenata
 	vector<vector<EdgeSegment>> modelSegments;	//najduži segmenti svih modela
 	vector<vector<EdgeSegment>> modelAllSegments;	//svi segmenti svih modela
@@ -145,9 +145,8 @@ int main() {
 
 	//writePolys(modelAllSegments);
 
-	imageID = "0102";
+	imageID = "0210.jpg";
 	string fileNameS = "../baza/"+imageID;
-	fileNameS.append(".jpg");
 	string fileNameSexit = "../results/testSrc.jpg";
 	char *fileName = (char*)fileNameS.c_str();
 	char *fileNameexit = (char*)fileNameSexit.c_str();
@@ -253,17 +252,30 @@ int main() {
 	double Qmax = 0.0;
 	double iBest = -1;
 	string idBest = "";
+	vector<vector<EdgeSegment>> AllSegments;
+	AllSegments.push_back(segments);
+	writePolys(AllSegments);
 	for (int i = 0; i <BestHyps.size(); i++)
 	{
 		
 		std::vector<int> matchedScene;
-		int j = atoi (BestHyps[i].getMseg().getImagrID().c_str());
+		std::vector<int> matchedModels;
+		//int j = atoi (BestHyps[i].getMseg().getImagrID().c_str());
+		int j = -1;
+		for(int k = 0; k < modelAllSegments.size(); k++)
+		{
+			if (BestHyps[i].getMseg().getImagrID() == modelAllSegments[k][0].getImagrID())
+			{
+				j = k;
+				break;
+			}
+		}
 		
-		j = (j/100) - 1;// j = 0; //@Debug
+		//j = (j/100) - 1;// j = 0; //@Debug
 		//cout << "\nEvaluating hypothesis: " << i <<" " << modelAllSegments[j][0].getImagrID();
-		if (i == 55)
+		if (i == 325)
 			i = i;
-		double Qi = match(BestHyps[i], segments, modelAllSegments[j], matchedScene);
+		double Qi = match(BestHyps[i], segments, modelAllSegments[j], matchedScene, matchedModels);
 		if (Qi > Qmax)
 		{
 			iBest = i;
