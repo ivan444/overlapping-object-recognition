@@ -104,10 +104,10 @@ int findSegment(EdgeSegment s, std::vector<EdgeSegment> ss)
 	double c = 0.0001;
 	for (int i = 0; i < ss.size(); i++)
 	{
-		if (( abs(s.getAngle()-ss[i].getAngle()) < c) &&
-			( abs(s.getMiddleX()-ss[i].getMiddleX()) < c) &&
-			( abs(s.getMiddleY()-ss[i].getMiddleY()) < c) &&
-			( abs(s.getLength()-ss[i].getLength()) < c))
+		if (( fabs(s.getAngle()-ss[i].getAngle()) < c) &&
+			( fabs(s.getMiddleX()-ss[i].getMiddleX()) < c) &&
+			( fabs(s.getMiddleY()-ss[i].getMiddleY()) < c) &&
+			( fabs(s.getLength()-ss[i].getLength()) < c))
 			return i;
 	}
 	return -1;
@@ -201,7 +201,7 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 			double y1 = tMi.getMiddleY();
 			double y2 = Sj.getMiddleY();
 			double Dij = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
-			double lij = abs((tMi.getLength()-Sj.getLength())/Sj.getLength());
+			double lij = fabs((tMi.getLength()-Sj.getLength())/Sj.getLength());
 			
 			if(aij >= aMax)// || Dij >= DMax || lij >= lMax)
 			{
