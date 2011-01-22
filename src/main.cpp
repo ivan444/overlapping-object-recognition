@@ -8,6 +8,8 @@
 #include "edgeSegmentator.h"
 #include "annotate.h"
 #include "generateHyp.h"
+#include <cmath>
+#define M_PI       3.14159265358979323846
 
 using namespace std;
 
@@ -51,7 +53,6 @@ void writePolys(vector<vector<EdgeSegment>> segments) {
 int main() {
 	
 	cout << "Hello\n";
-	cout << (-1%3) << endl;
 	const double PI = 3.141592;
 	string imageID;
 	double angleTreshold = 0.26179938779914943653855361527329;//0.17453292519943295769236907684886; // 10°
@@ -115,6 +116,7 @@ int main() {
 
 	//spremanje segmenata MODELA (primjera za uèenje)
 	for (int i = 1; i <= numOfShapes; i++)
+	//for (int i = 11; i <= 11; i++)
 	{
 		char s[5];
 		_itoa_s(i, s, 10);
@@ -141,10 +143,11 @@ int main() {
 		modelAllSegments.push_back(segments);
 	}
 
-	writePolys(modelAllSegments);
+	//writePolys(modelAllSegments);
 
 	imageID = "0102";
-	string fileNameS = "../baza/0102.jpg";
+	string fileNameS = "../baza/"+imageID;
+	fileNameS.append(".jpg");
 	string fileNameSexit = "../results/testSrc.jpg";
 	char *fileName = (char*)fileNameS.c_str();
 	char *fileNameexit = (char*)fileNameSexit.c_str();
@@ -256,7 +259,7 @@ int main() {
 		std::vector<int> matchedScene;
 		int j = atoi (BestHyps[i].getMseg().getImagrID().c_str());
 		
-		j = (j/100) - 1;
+		j = (j/100) - 1;// j = 0; //@Debug
 		//cout << "\nEvaluating hypothesis: " << i <<" " << modelAllSegments[j][0].getImagrID();
 		if (i == 55)
 			i = i;
@@ -288,6 +291,6 @@ int main() {
 	cout << "\nBest of the best try 2\n";
 	cout << iBest << ".) "<< BestHyps[iBest].getV().getTx() << "  "  << BestHyps[iBest].getV().getTy() <<"  "  << BestHyps[iBest].getV().getAngle() <<"  "  << BestHyps[iBest].getV().getK() << endl;
 	cout << BestHyps[iBest].getQ() << " " << BestHyps[iBest].getMseg().getImagrID()<< endl;*/
-	 
+	//int t; cin >> t;
 	return 1;
 }

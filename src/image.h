@@ -52,7 +52,8 @@ public:
 	 * koordinatni sustav (kao kod matrica).
 	 */ 
 	void set(int x, int y, ColorPixel val) {
-		imgData[y*width+x] = val;
+		if (y*width+x >= width*height) return;
+		imgData[y*width+x] = val; 
 	}
 	void setAll(ColorPixel val) {
 		int imgSize = width*height;
@@ -103,6 +104,7 @@ public:
 	 * TODO: iskoristiti operator overload!!
 	 */ 
 	void set(int x, int y, GrayPixel val) {
+		if (y*width+x >= width*height) return;
 		imgData[y*width+x] = val;
 	}
 	void setAll(GrayPixel val) {
