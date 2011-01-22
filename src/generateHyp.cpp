@@ -129,7 +129,8 @@ bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, 
 
 
 bool hypothesisCmp(  Hypothesis &a,  Hypothesis &b ){
-		return !(a.getAngleComp()+a.getLengthComp() > b.getAngleComp()+b.getLengthComp());
+	// TODO: Eksperimentirati
+	return !(a.getAngleComp()+a.getLengthComp() > b.getAngleComp()+b.getLengthComp());
 }
 
 
