@@ -79,7 +79,7 @@ GrayImage* EdgeDetector::sobel(ColorImage *img, int treshold){
 			a[7] = (int)(cp.v1*RED_F + cp.v2*GREEN_F + cp.v3*BLUE_F);
 			int sx = a[2] + 2*a[4] + a[7] - a[0] - 2*a[3] - a[5];
 			int sy = a[0] + 2*a[1] + a[2] - a[5] - 2*a[6] - a[7];
-			int M = (int)abs((double)sx) + abs((double)sy);
+			int M = abs(sx) + abs(sy);
 			if(M > treshold) gp.v = WHITE;
 			else gp.v = BLACK;
 			boundImg->set(x,y,gp);
