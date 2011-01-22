@@ -258,6 +258,8 @@ int main() {
 		
 		j = (j/100) - 1;
 		//cout << "\nEvaluating hypothesis: " << i <<" " << modelAllSegments[j][0].getImagrID();
+		if (i == 55)
+			i = i;
 		double Qi = match(BestHyps[i], segments, modelAllSegments[j], matchedScene);
 		if (Qi > Qmax)
 		{
@@ -265,7 +267,6 @@ int main() {
 			Qmax = Qi;
 			idBest = modelAllSegments[j][0].getImagrID();
 		}
-		//BestHyps[i]
 		BestHyps[i].setQ(Qi);
 		//cout << "\nQuality of hypothesis: " << Qi <<"\n";
 	}
@@ -276,17 +277,17 @@ int main() {
 	sort( BestHyps.begin(), BestHyps.end(), hypothesisCmp2 );
 	for (int i = 0; i < BestHyps.size(); i++)
 	{
-		cout << i << ". "<< BestHyps[i].getV().getTx() << "  "  << BestHyps[i].getV().getTy() <<"  "  << BestHyps[i].getV().getAngle() <<"  "  << BestHyps[i].getV().getK() << endl;
-		cout << BestHyps[i].getQ() << endl;
+		cout << i << ".) "<< BestHyps[i].getV().getTx() << "  "  << BestHyps[i].getV().getTy() <<"  "  << BestHyps[i].getV().getAngle() <<"  "  << BestHyps[i].getV().getK() << endl;
+		cout << BestHyps[i].getQ() << " " << BestHyps[i].getMseg().getImagrID()<< endl;
 	}
 	iBest = 0;
 	cout << "\nBest of the best\n";
-	cout << iBest << ". "<< BestHyps[iBest].getV().getTx() << "  "  << BestHyps[iBest].getV().getTy() <<"  "  << BestHyps[iBest].getV().getAngle() <<"  "  << BestHyps[iBest].getV().getK() << endl;
+	cout << iBest << ".) "<< BestHyps[iBest].getV().getTx() << "  "  << BestHyps[iBest].getV().getTy() <<"  "  << BestHyps[iBest].getV().getAngle() <<"  "  << BestHyps[iBest].getV().getK() << endl;
 	cout << BestHyps[iBest].getQ() << " "<< BestHyps[iBest].getMseg().getImagrID() << endl;
-	iBest = BestHyps.size()-1;
+	/*iBest = BestHyps.size()-1;
 	cout << "\nBest of the best try 2\n";
-	cout << iBest << ". "<< BestHyps[iBest].getV().getTx() << "  "  << BestHyps[iBest].getV().getTy() <<"  "  << BestHyps[iBest].getV().getAngle() <<"  "  << BestHyps[iBest].getV().getK() << endl;
-	cout << BestHyps[iBest].getQ() << " " << BestHyps[iBest].getMseg().getImagrID()<< endl;
+	cout << iBest << ".) "<< BestHyps[iBest].getV().getTx() << "  "  << BestHyps[iBest].getV().getTy() <<"  "  << BestHyps[iBest].getV().getAngle() <<"  "  << BestHyps[iBest].getV().getK() << endl;
+	cout << BestHyps[iBest].getQ() << " " << BestHyps[iBest].getMseg().getImagrID()<< endl;*/
 	 
 	return 1;
 }

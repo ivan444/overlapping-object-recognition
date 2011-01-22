@@ -143,8 +143,8 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 	matchedScene.clear();
 	paramVector v = initH.getV();
 	int startSegmentModel = findSegment(initH.getMseg(), model);
-	int startSceneModel = findSegment(initH.getSseg(), scene);
-	if(startSegmentModel == -1 || startSceneModel == -1)
+	int startSegmentScene = findSegment(initH.getSseg(), scene);
+	if(startSegmentModel == -1 || startSegmentScene == -1)
 		return -1;
 
 	Hypothesis H;
@@ -152,12 +152,13 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 	H.setV(initH.getV());
 	H.setMseg(initH.getMseg());
 	H.setSseg(initH.getSseg());
-	matchedScene.push_back(startSceneModel);
+	matchedScene.push_back(startSegmentScene);
 
 	double lMean = avgLength (model);
 	std::vector<EdgeSegment> matchedModel;
+	matchedModel.push_back(model[startSegmentModel]);
 	double sumModel = sumLength(model);
-	double sumMatchedModel = 0.0;
+	double sumMatchedModel = model[startSegmentModel].getLength();
 	double Qi = 0;
 
 	int direction = 1;

@@ -49,18 +49,26 @@ vector<EdgeSegment> EdgeSegmentator::extractFeatures (GrayImage *src, double thr
 			if (compareDot(segments1[i].getFirst(), segments2[j].getFirst())) {
 				segments1[i].setFirst(segments2[j].getLast());
 				segs2ToDelete.push_back(j);
+				EdgeSegment newSeg(segments1[i].getFirst(), segments1[i].getLast(), segments1[i].getImagrID());
+				segments1[i] = newSeg;
 
 			} else if (compareDot(segments1[i].getFirst(), segments2[j].getLast())) {
 				segments1[i].setFirst(segments2[j].getFirst());
 				segs2ToDelete.push_back(j);
+				EdgeSegment newSeg(segments1[i].getFirst(), segments1[i].getLast(), segments1[i].getImagrID());
+				segments1[i] = newSeg;
 
 			} else if (compareDot(segments1[i].getLast(), segments2[j].getFirst())) {
 				segments1[i].setLast(segments2[j].getLast());
 				segs2ToDelete.push_back(j);
+				EdgeSegment newSeg(segments1[i].getFirst(), segments1[i].getLast(), segments1[i].getImagrID());
+				segments1[i] = newSeg;
 
 			} else if (compareDot(segments1[i].getLast(), segments2[j].getLast())) {
 				segments1[i].setLast(segments2[j].getFirst());
 				segs2ToDelete.push_back(j);
+				EdgeSegment newSeg(segments1[i].getFirst(), segments1[i].getLast(), segments1[i].getImagrID());
+				segments1[i] = newSeg;
 			}
 		}
 	}
