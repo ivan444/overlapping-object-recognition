@@ -100,6 +100,7 @@ vector<Hypothesis> getBestHyp(int numOfHyp, vector<Hypothesis>  &hyps);
 
 double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 			 std::vector<EdgeSegment> &model,
-			 std::vector<int> &matchedScene);
+			 std::vector<int> &matchedScene,
+			 std::vector<int> &matchedModelInd);
 
 #endif
