@@ -73,7 +73,9 @@ double updateBasic(Hypothesis &H, double lMean)
 	vi += vi1;
 	temp.clear();
 	temp2.clear();
-	double angle = atan2(vi(1,0),vi(0,0));
+	double angle = atan(vi(1,0)/vi(0,0));
+	if (angle < 0) angle += M_PI;
+
 	double k = vi(0,0)/acos(angle);
 	paramVector _vi(k, angle, vi(2,0), vi(3,0));
 	H.setV(_vi);
@@ -159,7 +161,7 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 	matchedModel.push_back(model[startSegmentModel]);
 	double sumModel = sumLength(model);
 	double sumMatchedModel = model[startSegmentModel].getLength();
-	double Qi = 0;
+	double Qi = sumMatchedModel/sumModel;
 
 	int direction = 1;
 	int step = 1;

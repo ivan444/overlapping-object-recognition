@@ -7,6 +7,7 @@
 #include "generateHyp.h"
 #include "math.h"
 #include "image.h"
+#define M_PI       3.14159265358979323846
 
 
 #define sk 0.1
@@ -75,32 +76,37 @@ vector<EdgeSegment> GetLongestSegs(int numOfSeg, vector<EdgeSegment> segments){
 
 bool checkCompatibility(EdgeSegment M, EdgeSegment S, double treshAngle, double treshLength, double k0, double &A, double &r)
 {
-	A = fabs(M.getAngle_A() - S.getAngle_A());
+	double angleM = atan(tan(M.getAngle_A()));
+	if (angleM < 0) angleM += M_PI;
+	double angleS = atan(tan(S.getAngle_A()));
+	if (angleS < 0) angleS += M_PI;
+
+	A = fabs(angleM - angleS);
 	r = fabs(S.getLength()/ M.getLength());
 
-	if (A  > treshAngle)
-		return false;
-	else if (r - k0 > k0*treshLength)
-		return false;
-	else
-		return true;
+	if(! (A < treshAngle || fabs(A - M_PI) < treshAngle)) return false;
+	else if (r - k0 > k0*treshLength) return false; // Zasad nepotrebno...
+	else if (k0 > 5 || k0 < 0.2) return false; // @Debug, uklanjanje loših hipoteza (svi objekti su nam približno jednaki)
+	else return true;
 }
 
 bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, double tresholdAngle, double tresholdLength)
 {
 	double A = 0;
 	double r = 0;
+	// @Debug
 	if (S.getMiddleX() == 641 && M.getMiddleX() == 653)
 		int nesto = 0;
-	double k0 = fabs(S.getLength()/M.getLength());
+	if (M.getAngle_A() > 1.02 && M.getAngle_A() < 1.03)
+		int nesto = 12843;
+	double k0 = fabs(S.getLength()/M.getLength()); // zasad nekorisno
 	double angle = S.getAngle() - M.getAngle();
 	double tx0 = S.getMiddleX() - k0*(M.getMiddleX()*cos(angle) - M.getMiddleY()*sin(angle));
 	double ty0 = S.getMiddleY() - k0*(M.getMiddleX()*sin(angle) + M.getMiddleY()*cos(angle));
 
 	bool compatible = checkCompatibility(M, S, tresholdAngle, tresholdLength, k0, A, r);
 
-	if (!compatible)
-		return false;
+	if (!compatible) return false;
 
 	paramVector v0(k0, angle, tx0, ty0);
 
@@ -123,12 +129,8 @@ bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, 
 
 
 bool hypothesisCmp(  Hypothesis &a,  Hypothesis &b ){
-		return (a.getAngleComp()+a.getLengthComp() > b.getAngleComp()+b.getLengthComp());
+		return !(a.getAngleComp()+a.getLengthComp() > b.getAngleComp()+b.getLengthComp());
 }
-
-
-
-
 
 
 vector<Hypothesis> getBestHyp(int numOfHyp, vector<Hypothesis>  &hyps){

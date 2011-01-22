@@ -5,6 +5,7 @@
 #include <string>
 #include "image.h"
 #include <cmath>
+#define M_PI       3.14159265358979323846
 using namespace std;
 
 
@@ -13,25 +14,29 @@ class EdgeSegment
 private:
 	double angle;
 	double angle_A;
-	double angle_atan;
 	double length;
 	double middleX;
 	double middleY;
 	PixelCoordinates first;
 	PixelCoordinates last;
 	string imagrID;
-public:
-	EdgeSegment(){};
-	EdgeSegment(PixelCoordinates _first, PixelCoordinates _last, string id){
-		first = _first;
-		last = _last;
+
+	void update() {
 		middleX = (first.x+last.x)*0.5;
 		middleY = (first.y+last.y)*0.5;
 		double dx = ((int)(last.x)) - ((int)first.x);
 		double dy = ((int)last.y) - ((int)first.y);
 		length = sqrt(dx*dx + dy*dy);
-		angle = atan2(dy,dx);
-		angle_atan = atan(dy/dx);
+		angle = atan(dy/dx);
+		if (angle < 0) angle += M_PI;
+	}
+
+public:
+	EdgeSegment(){};
+	EdgeSegment(PixelCoordinates _first, PixelCoordinates _last, string id){
+		first = _first;
+		last = _last;
+		update();
 		angle_A=0;
 		imagrID = id;
 	}
@@ -42,7 +47,6 @@ public:
 	/** Kut u odnosu na prethodni segment. */
 	double getAngle_A(){return angle_A;}
 	/** Kut u odnosu na x-os ali je dobiven funkcijom atan. */
-	double getAngle_atan(){return angle_atan;}
 	void setAngle_A(double value){angle_A=value;}
 	double getLength()const{return length;}
 	double getMiddleX (){return middleX;}
@@ -54,19 +58,23 @@ public:
 	void setFirst(unsigned int x, unsigned int y) {
 		first.x = x;
 		first.y = y;
+		update();
 	}
 
 	void setLast(unsigned int x, unsigned int y) {
 		last.x = x;
 		last.y = y;
+		update();
 	}
 
 	void setFirst(PixelCoordinates f) {
 		first = f;
+		update();
 	}
 
 	void setLast(PixelCoordinates l) {
 		last = l;
+		update();
 	}
 
 	/*EdgeSegment& operator= (EdgeSegment &seg)
