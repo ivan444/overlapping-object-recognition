@@ -32,19 +32,19 @@ EdgeSegment paramVector::transform(EdgeSegment &orig)
 	PixelCoordinates last = orig.getLast();
 	double x = (double)first.x;
 	double y = (double)first.y;
-	x = tx + x*kCos - y*kSin;
-	y = ty + x*kSin + y*kCos;
+	double new_x = tx + x*kCos - y*kSin;
+	double new_y = ty + x*kSin + y*kCos;
 	PixelCoordinates tFirst;
-	tFirst.x = (unsigned int) round (x);
-	tFirst.y = (unsigned int) round (y);
+	tFirst.x = (unsigned int) round (new_x);
+	tFirst.y = (unsigned int) round (new_y);
 
 	x = (double)last.x;
 	y = (double)last.y;
-	x = tx + x*kCos - y*kSin;
-	y = ty + x*kSin + y*kCos;
+	new_x = tx + x*kCos - y*kSin;
+	new_y = ty + x*kSin + y*kCos;
 	PixelCoordinates tLast;
-	tLast.x = (unsigned int) round (x);
-	tLast.y = (unsigned int) round (y);
+	tLast.x = (unsigned int) round (new_x);
+	tLast.y = (unsigned int) round (new_y);
 
 	EdgeSegment result(tFirst,tLast, "transform" + orig.getImagrID());
 
@@ -56,7 +56,7 @@ bool segmentsCmp( const EdgeSegment &a, const EdgeSegment &b ){
 		return (a.getLength() > b.getLength());
 }
 
-vector<EdgeSegment> GetLongestSegs(int numOfSeg, vector<EdgeSegment> &segments){
+vector<EdgeSegment> GetLongestSegs(int numOfSeg, vector<EdgeSegment> segments){
 	
 	vector<EdgeSegment> longestSegs;
 	
@@ -90,6 +90,8 @@ bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, 
 {
 	double A = 0;
 	double r = 0;
+	if (S.getMiddleX() == 641 && M.getMiddleX() == 653)
+		int nesto = 0;
 	double k0 = fabs(S.getLength()/M.getLength());
 	double angle = S.getAngle() - M.getAngle();
 	double tx0 = S.getMiddleX() - k0*(M.getMiddleX()*cos(angle) - M.getMiddleY()*sin(angle));
