@@ -86,7 +86,8 @@ bool checkCompatibility(EdgeSegment M, EdgeSegment S, double treshAngle, double 
 
 	if(! (A < treshAngle || fabs(A - M_PI) < treshAngle)) return false;
 	else if (r - k0 > k0*treshLength) return false; // Zasad nepotrebno...
-	else if (k0 > 5 || k0 < 0.2) return false; // @Debug, uklanjanje loših hipoteza (svi objekti su nam približno jednaki)
+	//else if (k0 > 5 || k0 < 0.3) return false; // @Debug, uklanjanje loših hipoteza (svi objekti su nam približno jednaki)
+	else if (k0 > 3 || k0 < 0.33) return false; // @Debug, uklanjanje loših hipoteza (svi objekti su nam približno jednaki)
 	else return true;
 }
 

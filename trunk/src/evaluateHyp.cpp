@@ -6,11 +6,12 @@
 #include <vector>
 
 #define aMax 0.35
-#define DMax 12.0
+#define DMax 45.0
 #define lMax 0.7
 #define p 0.6
 #define q 0.3
 #define r 0.1
+#define M_PI 3.14159265358979323846
 
 using namespace boost::numeric::ublas;
 
@@ -73,12 +74,17 @@ double updateBasic(Hypothesis &H, double lMean)
 	vi += vi1;
 	temp.clear();
 	temp2.clear();
+	double kCos = vi(0,0);
+	double kSin = vi(1,0);
 	double angle = atan(vi(1,0)/vi(0,0));
 	if (angle < 0) angle += M_PI;
 
-	double k = vi(0,0)/acos(angle);
-	paramVector _vi(k, angle, vi(2,0), vi(3,0));
+	double k = kCos/cos(angle);
+	double tx = vi(2,0);
+	double ty = vi(3,0);
+	paramVector _vi(k, angle, tx, ty);
 	H.setV(_vi);
+	H.setMatrixS(errorSi);
 	
 
 	//izraèunaj R
@@ -138,7 +144,8 @@ double sumLength( std::vector<EdgeSegment> &ss)
 /*int match(paramVector v,
 		  std::vector<EdgeSegment> &scene, std::vector<EdgeSegment> &model,
 		  int startSegmentModel)*/
-double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
+double match(Hypothesis &initH, Hypothesis &newH,
+			 std::vector<EdgeSegment> &scene,
 			 std::vector<EdgeSegment> &model,
 			 std::vector<int> &matchedScene,
 			 std::vector<int> &matchedModelInd)
@@ -168,7 +175,7 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 	int direction = 1;
 	int step = 1;
 	int i;
-	int iLast = 0;
+	int iLast = startSegmentModel;
 	int iOffset = 0;
 	while(1)
 	{
@@ -197,7 +204,10 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 		{
 			EdgeSegment Sj = scene[j];
 			double dij = 0;
-			double aij = tMi.getAngle() - Sj.getAngle();
+			double aij = fabs(tMi.getAngle() - Sj.getAngle());
+			if (aij > M_PI/2 && aij < M_PI) {
+				aij = M_PI - aij;
+			}
 			double x1 = tMi.getMiddleX();
 			double x2 = Sj.getMiddleX();
 			double y1 = tMi.getMiddleY();
@@ -234,7 +244,9 @@ double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
 		}
 		
 	}
-	sort(matchedScene.begin(), matchedScene.end());
+	//sort(matchedScene.begin(), matchedScene.end());
+	//sort(matchedModelInd.begin(), matchedModelInd.end());
+	newH = H;
 	return Qi;
 }
 

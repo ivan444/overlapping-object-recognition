@@ -115,8 +115,11 @@ void evaluateHyps(vector<Hypothesis> &BestHyps, vector<EdgeSegment> &segments,
 			}
 		}
 		
+		Hypothesis newH;
 		//cout << "\nEvaluating hypothesis: " << i <<" " << modelAllSegments[j][0].getImagrID();
-		double Qi = match(BestHyps[i], segments, modelAllSegments[j], matchedScene, matchedModels);
+		if (i == 2 || i == 4 || i == 7)
+			int nesto = 0;
+		double Qi = match(BestHyps[i],newH, segments, modelAllSegments[j], matchedScene, matchedModels);
 		if (Qi > Qmax)
 		{
 			iBest = i;
@@ -173,6 +176,33 @@ bool parseOptions(int argc, char *argv[], double *minPolyAngle, int *minPolyDotD
 
     return hasRequired;
 }
+
+void printResults (vector<Hypothesis> &hyps)
+{
+	vector<string> modelNames;
+	vector<double> modelQualities;
+	modelNames.push_back(hyps[0].getMseg().getImagrID());
+	modelQualities.push_back(hyps[0].getQ());
+	for (int i = 1; i < hyps.size(); i++)
+	{
+		string model = hyps[i].getMseg().getImagrID();
+		vector<string>::iterator it;
+		it = find (modelNames.begin(), modelNames.end(), model);
+		if (it == modelNames.end())
+		{
+			modelNames.push_back(model);
+			modelQualities.push_back(hyps[i].getQ());
+		}
+	}
+
+	cout << endl;
+	for (int i = 0; i < modelNames.size(); i++)
+	{
+		cout << i+1 << ".)" << modelNames[i] << " " << modelQualities[i] << endl; 
+	}
+	return;
+}
+
 
 //kasnije: varirati broj segmenata u sceni koje uzimamo u obzir (model 10)
 int main(int argc, char *argv[]) {
@@ -234,7 +264,7 @@ int main(int argc, char *argv[]) {
 	// writePolys(modelAllSegments);
 
 	// TODO: Predati preko argumenata!
-	imageID = "0210.jpg";
+	imageID = "0102.jpg";
 	string fileNameS = "../baza/"+imageID;
 	char *fileName = (char*)fileNameS.c_str();
 	img = io->read(fileName);
@@ -246,12 +276,17 @@ int main(int argc, char *argv[]) {
 	generateHyps(numOfSeg_scene, segments, modelSegments,
 					tresholdAngle, tresholdLength, CompHyps);
 
+	//@Debug
+	/*vector<vector<EdgeSegment>> sceneAll;
+	sceneAll.push_back(sceneSegments);
+	writePolys(sceneAll);*/
+
 	printf("Broj hipoteza: %d\n", CompHyps.size());
 	vector<Hypothesis> BestHyps = getBestHyp(numOfHyp, CompHyps); 
 	printf("Best hipot: %d\n", BestHyps.size());
-	for (int i = 0; i < BestHyps.size(); i++) {
+	/*for (int i = 0; i < BestHyps.size(); i++) {
 		cout << BestHyps[i].getMseg().getImagrID() << endl;
-	}
+	}*/
 
 	//evaluacija hipoteza
 	double Qmax = 0.0;
@@ -262,7 +297,11 @@ int main(int argc, char *argv[]) {
 	cout << "\nBest hypothesis is: " << iBest << ", " <<idBest;
 	cout << "\nBest quality is: " << Qmax << endl;
 	sort( BestHyps.begin(), BestHyps.end(), hypothesisCmp2 );
-	for (int i = 0; i < BestHyps.size(); i++)
+	/*int bestWriteSize = 20;
+	if (bestWriteSize > BestHyps.size()){
+		bestWriteSize = BestHyps.size();
+	}
+	for (int i = 0; i < bestWriteSize; i++)
 	{
 		cout << i << ".) "<< BestHyps[i].getV().getTx() << "  "  << BestHyps[i].getV().getTy() <<"  "  << BestHyps[i].getV().getAngle() <<"  "  << BestHyps[i].getV().getK() << endl;
 		cout << BestHyps[i].getQ() << " " << BestHyps[i].getMseg().getImagrID()<< endl;
@@ -270,7 +309,9 @@ int main(int argc, char *argv[]) {
 	iBest = 0;
 	cout << "\nBest of the best\n";
 	cout << iBest << ".) "<< BestHyps[iBest].getV().getTx() << "  "  << BestHyps[iBest].getV().getTy() <<"  "  << BestHyps[iBest].getV().getAngle() <<"  "  << BestHyps[iBest].getV().getK() << endl;
-	cout << BestHyps[iBest].getQ() << " "<< BestHyps[iBest].getMseg().getImagrID() << endl;
+	cout << BestHyps[iBest].getQ() << " "<< BestHyps[iBest].getMseg().getImagrID() << endl;*/
+	
+	printResults(BestHyps);
 	int t; cin >> t;
 	return 1;
 }

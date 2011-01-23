@@ -98,7 +98,8 @@ vector<EdgeSegment> GetLongestSegs(int numOfHyp, vector<EdgeSegment> segments);
 bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, double tresholdAngle, double tresholdLength);
 vector<Hypothesis> getBestHyp(int numOfHyp, vector<Hypothesis>  &hyps);
 
-double match(Hypothesis &initH, std::vector<EdgeSegment> &scene,
+double match(Hypothesis &initH, Hypothesis &newH,
+			 std::vector<EdgeSegment> &scene,
 			 std::vector<EdgeSegment> &model,
 			 std::vector<int> &matchedScene,
 			 std::vector<int> &matchedModelInd);
