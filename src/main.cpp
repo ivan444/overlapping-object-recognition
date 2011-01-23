@@ -20,16 +20,23 @@ bool hypothesisCmp2(  Hypothesis &a,  Hypothesis &b ){
 	return (a.getQ() > b.getQ());
 }
 
+string extractFilename(const string& str)
+{
+	size_t found;
+	found = str.find_last_of("/\\");
+	return str.substr(found+1);
+}
+
+
 /*
  * Crtanje segmenata objekta i ispis njegovih podataka.
  */
-void writePolys(vector<vector<EdgeSegment>> segments) {
+void writePolys(vector<vector<EdgeSegment>> segments, string inDir) {
 	for (int i = 0; i < segments.size(); i++) {
-		cout << "Model: " << segments[i][0].getImagrID() << ", broj segmenata: " << segments[i].size() << endl;
+		cout << "Model: " << segments[i][0].getImagrID() << ", number of segments: " << segments[i].size() << endl;
 		
 		string imgId = segments[i][0].getImagrID();
 		string outDir = "../anotirani/";
-		string inDir = "../baza/";
 
 		ImageIO *io = new JpegIO();
 		BinaryFilter* bf = new BinaryFilter(150);
@@ -37,13 +44,13 @@ void writePolys(vector<vector<EdgeSegment>> segments) {
 		ColorImage *orgModelImg = io->read((char*)(inDir+imgId).c_str());
 		GrayImage *gModelImage = bf->applyFilterC2G(orgModelImg);
 
-		cout << "Anotiranje!"<< endl;
+		cout << "Annotate"<< endl;
 		ColorImage *mAnotImg = annotate(gModelImage, segments[i]);
 
 		char num[10];
 		itoa(i, num, 10);
 
-		cout << "Spremanje!" << endl;
+		cout << "Save" << endl << endl;
 		string outFile = outDir + imgId;
 		outFile.append(num);
 		outFile.append(".jpg");
@@ -60,7 +67,7 @@ void loadModels(vector<string> &modelShapes, string modelsPath,
 	for (int i = 0; i < modelShapes.size(); i++) {
 		string imageID = modelShapes[i];
 		string fileRead = modelsPath + imageID;
-		cout << "reading " << fileRead <<endl;
+		cout << "Reading " << fileRead << endl;
 		ColorImage *img = io->read((char*) fileRead.c_str());
 		if (img == NULL) continue;
 		GrayImage *gImg = bf->applyFilterC2G(img);
@@ -133,7 +140,7 @@ void evaluateHyps(vector<Hypothesis> &BestHyps, vector<EdgeSegment> &segments,
 
 bool parseOptions(int argc, char *argv[], double *minPolyAngle, int *minPolyDotDist,
 		double *minHypCompAngle, double *minHypCompLength, int *sceneSegsNum,
-		int *modelSegsNum, int *numOfHyp, string *modelsDir, string *scenePath,
+		int *modelSegsNum, int *numOfHyp, bool *verbose, string *modelsDir, string *scenePath,
 		vector<string> &modelShapes)
 {
     char* minPolyAngle_ = NULL;
@@ -146,33 +153,92 @@ bool parseOptions(int argc, char *argv[], double *minPolyAngle, int *minPolyDotD
 	char* modelsDir_ = NULL;
 	char* scenePath_ = NULL;
 	char* modelShapes_ = NULL;
-	char* debug = NULL; // not used
+	char* verbose_ = NULL;
 	bool help;
 	
 	bool hasRequired = true;
 
     struct options opts[] = 
     {
-       { &minPolyAngle_, "polyangle", "Threshold angle for connecting polygons.", "a", 1 },
-	   { &minPolyDotDist_, "polydotdist", "Threshold for connecting dots into polygons.", "i", 1 },
-	   { &minHypCompAngle_, "hypcompangle", "Threshold angle for compatible hypotesis.", "c", 1 },
-	   { &minHypCompLength_, "hypcomplength", "Threshold length for compatible hypotesis.", "l", 1 },
-	   { &sceneSegsNum_, "scenesegsnum", "Number of segments in scene.", "g", 1 },
-	   { &modelSegsNum_, "modelsegsnum", "Number of segments in model.", "j", 1 },
-	   { &numOfHyp_, "hypsnum", "Number of hypotesis.", "f", 1 },
-	   { &modelsDir_, "modelsdir", "Path to directory with models.", "b", 1 },
-	   { &scenePath_, "scenepath", "Path to scene image.", "s", 1 },
-	   { &modelShapes_, "models", "List of models (filenames).", "m", 1 },
-	   { &debug, "debug", "Debug mode.", "d", 0 } // Not used
+       { &minPolyAngle_, "polyangle", "(float) Threshold angle for connecting polygons.", "a", 1 },
+	   { &minPolyDotDist_, "polydotdist", "(int) Threshold for connecting dots into polygons.", "i", 1 },
+	   { &minHypCompAngle_, "hypcompangle", "(float) Threshold angle for compatible hypotesis.", "c", 1 },
+	   { &minHypCompLength_, "hypcomplength", "(float) Threshold length for compatible hypotesis.", "l", 1 },
+	   { &sceneSegsNum_, "scenesegsnum", "(int) Number of segments in scene.", "g", 1 },
+	   { &modelSegsNum_, "modelsegsnum", "(int) Number of segments in model.", "j", 1 },
+	   { &numOfHyp_, "hypsnum", "(int) Number of hypotesis.", "f", 1 },
+	   { &modelsDir_, "modelsdir", "[REQUIRED] Path to directory with models (must end with '/').", "b", 1 },
+	   { &scenePath_, "scenepath", "[REQUIRED] Path to scene image.", "s", 1 },
+	   { &modelShapes_, "models", "[REQUIRED] List of models (filenames). Format: name1.jpg,name2.jpg,name3.jpg", "m", 1 },
+	   { &verbose_, "verbose", "Verbose output.", "v", 0 }
 
     };
 
     GetOpts _optprser = GetOpts(opts, help, 11, argc, argv);
 	if (help) return false;
     
-    if(debug != NULL) {
-        printf("Value for debug is: %s\n", debug);
-    }
+	if(minPolyAngle_ != NULL) {
+		sscanf(minPolyAngle_, "%lf", minPolyAngle);
+	}
+
+	if(minPolyDotDist_ != NULL) {
+		sscanf(minPolyDotDist_, "%d", minPolyDotDist);
+	}
+
+	if(minHypCompAngle_ != NULL) {
+		sscanf(minHypCompAngle_, "%lf", minHypCompAngle);
+	}
+
+	if(minHypCompLength_ != NULL) {
+		sscanf(minHypCompLength_, "%lf", minHypCompLength);
+	}
+
+	if(sceneSegsNum_ != NULL) {
+		sscanf(sceneSegsNum_, "%d", sceneSegsNum);
+	}
+
+	if(modelSegsNum_ != NULL) {
+		sscanf(modelSegsNum_, "%d", modelSegsNum);
+	}
+
+	if(numOfHyp_ != NULL) {
+		sscanf(numOfHyp_, "%d", numOfHyp);
+	}
+
+	if(modelsDir_ != NULL) {
+		modelsDir->clear();
+		modelsDir->append(modelsDir_);
+	} else {
+		cout << "Argument modelsdir is required!" << endl;
+		hasRequired = false;
+	}
+
+	if(scenePath_ != NULL) {
+		scenePath->clear();
+		scenePath->append(scenePath_);
+	} else {
+		cout << "Argument scenepath is required!" << endl;
+		hasRequired = false;
+	}
+
+	if(modelShapes_ != NULL) {
+		char *pos = NULL;
+		char *start = modelShapes_;
+		while ( (pos = strstr(start, ",")) != NULL) {
+			*pos = '\0';
+			modelShapes.push_back(start);
+			start = pos+1;
+		}
+		modelShapes.push_back(start); // last one has no ',' after name
+
+	} else {
+		cout << "Argument modelshapes is required!" << endl;
+		hasRequired = false;
+	}
+
+	if(verbose_ != NULL) {
+		*verbose = true;
+	}
 
     return hasRequired;
 }
@@ -206,8 +272,6 @@ void printResults (vector<Hypothesis> &hyps)
 
 //kasnije: varirati broj segmenata u sceni koje uzimamo u obzir (model 10)
 int main(int argc, char *argv[]) {
-	
-	cout << "Hello\n";
 	string imageID;
 	double angleTreshold = 15*(M_PI/180);
 	int eFpar = 10;  // dozvoljena udaljenost tocke od segmenta prilikom poligonizacije/divide and conquer
@@ -222,10 +286,11 @@ int main(int argc, char *argv[]) {
 	vector<string> modelShapes;
 	string modelsDir = "../baza/";
 	string scenePath;
+	bool verbose = false;
 
 	bool gotAll = parseOptions(argc, argv, &angleTreshold, &eFpar,
 		&tresholdAngle, &tresholdLength, &numOfSeg_scene,
-		&numOfSeg_model, &numOfHyp, &modelsDir, &scenePath,
+		&numOfSeg_model, &numOfHyp, &verbose, &modelsDir, &scenePath,
 		modelShapes);
 
 	if (!gotAll) {
@@ -241,33 +306,17 @@ int main(int argc, char *argv[]) {
 	EdgeDetector* ed = new EdgeDetector();
 	EdgeSegmentator f;
 
-	
-	// TODO: Predati preko argumenata!
-	modelShapes.push_back("0101.jpg");
-	modelShapes.push_back("0201.jpg");
-	modelShapes.push_back("0301.jpg");
-	modelShapes.push_back("0401.jpg");
-	modelShapes.push_back("0501.jpg");
-	modelShapes.push_back("0601.jpg");
-	modelShapes.push_back("0701.jpg");
-	modelShapes.push_back("0801.jpg");
-	modelShapes.push_back("0901.jpg");
-	modelShapes.push_back("1001.jpg");
-	modelShapes.push_back("1101.jpg");
-	modelShapes.push_back("1201.jpg");
-
 	loadModels(modelShapes, modelsDir, io, bf, eFpar,
 		angleTreshold, numOfSeg_model,
 		modelSegments, modelAllSegments);
 
 	// @Debug
-	// writePolys(modelAllSegments);
+	// writePolys(modelAllSegments, modelsDir);
 
-	// TODO: Predati preko argumenata!
-	imageID = "0102.jpg";
-	string fileNameS = "../baza/"+imageID;
-	char *fileName = (char*)fileNameS.c_str();
-	img = io->read(fileName);
+	imageID = extractFilename(scenePath);
+	cout << "Reading scene " << scenePath << endl;
+	img = io->read((char*)scenePath.c_str());
+	if (img == NULL) return -1;
 	
 	GrayImage* fImage = bf->applyFilterC2G(img);
 	segments = f.extractFeatures(fImage, eFpar, imageID, angleTreshold);
@@ -279,11 +328,11 @@ int main(int argc, char *argv[]) {
 	//@Debug
 	/*vector<vector<EdgeSegment>> sceneAll;
 	sceneAll.push_back(sceneSegments);
-	writePolys(sceneAll);*/
+	writePolys(sceneAll, modelsDir);*/
 
-	printf("Broj hipoteza: %d\n", CompHyps.size());
+	cout << "Number of Hypothesis: " << CompHyps.size() << endl;
 	vector<Hypothesis> BestHyps = getBestHyp(numOfHyp, CompHyps); 
-	printf("Best hipot: %d\n", BestHyps.size());
+	cout << "Best Hypothesis num: " << BestHyps.size() << endl;
 	/*for (int i = 0; i < BestHyps.size(); i++) {
 		cout << BestHyps[i].getMseg().getImagrID() << endl;
 	}*/
@@ -312,6 +361,5 @@ int main(int argc, char *argv[]) {
 	cout << BestHyps[iBest].getQ() << " "<< BestHyps[iBest].getMseg().getImagrID() << endl;*/
 	
 	printResults(BestHyps);
-	int t; cin >> t;
 	return 1;
 }

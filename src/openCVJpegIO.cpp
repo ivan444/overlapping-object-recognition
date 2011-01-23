@@ -11,7 +11,7 @@ void JpegIO::write(ColorImage* img, char* savePath){
    
    
    if( !cvSaveImage(savePath, pRGBImg) ){
-		cerr << "failed to write image file\n";
+		cerr << "Failed to write image file.\n";
 		return;
 	}
 	cvReleaseImage(&pRGBImg);
@@ -27,7 +27,7 @@ void JpegIO::write(GrayImage* img, char* savePath){
    IPL_DEPTH_8U, GRAY_IMAGE_CHANNELS );
    copyImgToIplGray(pGrayImg, img);
    if( !cvSaveImage(savePath, pGrayImg) ){
-		cerr << "failed to write image file" << endl;
+		cerr << "Failed to write image file." << endl;
 		return;
 	}
 	cvReleaseImage(&pGrayImg);
@@ -41,7 +41,7 @@ ColorImage* JpegIO::read(char* imgPath){
 	  // Load the RGB image from file
 	  pRGBImg = cvLoadImage(imgPath, CV_LOAD_IMAGE_UNCHANGED);
 	  if(!pRGBImg){
-	  	cerr << "failed to load input image" << endl;
+	  	cerr << "Failed to load input image." << endl;
 		return NULL;
 	  }
 	  ColorImage *img = new ColorImage(pRGBImg->width, pRGBImg->height);
