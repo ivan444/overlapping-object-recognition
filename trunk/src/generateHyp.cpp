@@ -63,7 +63,7 @@ vector<EdgeSegment> GetLongestSegs(int numOfSeg, vector<EdgeSegment> segments){
 	
 	sort( segments.begin(), segments.end(), segmentsCmp );
 
-	if (segments.size()< numOfSeg)//ako ima manje od 10 lin. segmenata
+	if (segments.size() < numOfSeg)//ako ima manje od 10 lin. segmenata
 	{
 		numOfSeg = segments.size();
 	}
@@ -131,7 +131,7 @@ bool GenerateErrCovMatrix(Hypothesis &hypothesis, EdgeSegment M, EdgeSegment S, 
 
 bool hypothesisCmp(  Hypothesis &a,  Hypothesis &b ){
 	// TODO: Eksperimentirati
-	return !(a.getAngleComp()+a.getLengthComp() > b.getAngleComp()+b.getLengthComp());
+	return (a.getAngleComp()+a.getLengthComp() < b.getAngleComp()+b.getLengthComp());
 }
 
 
