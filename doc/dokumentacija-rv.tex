@@ -1,0 +1,100 @@
+\documentclass[10pt, a4paper]{article}
+
+\usepackage{su2010}
+
+\usepackage[croatian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[pdftex]{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{url}
+
+\title{Raspoznavanje preklapajućih 2D objekata}
+
+
+\name{Tomislav Babić, Mateja Čuljak, Đorđe Grbić, Ivan Krišto, Maja Šverko} 
+
+\address{
+Sveučilište u Zagrebu, Fakultet elektrotehnike i računarstva\\
+Unska 3, 10000 Zagreb, Hrvatska\\ 
+}
+        
+%\abstract{}
+
+\begin{document}
+
+\maketitleabstract
+
+\section{Projektni zadatak}
+
+\subsection{Opis projektnog zadatka}
+
+Cilj projekta je razvijanje sustava računalnog vida za klasifikaciju preklapajućih 2D objekata. Skup objekata koji se klasificiraju je unaprijed poznat. Pod pojmom “preklapanje” uzimaju se u obzir sljedeća pravila:
+\begin{itemize}
+\item objekti se međusobno preklapaju,
+\item moguće je da objekt ne sudjeluje u preklapanju (tj. objekt je samostalan),
+\item svaki objekt prekriven je najviše jednim objektom,
+\item razine preklapanja su proizvoljne,
+\item rotacija, skaliranje i pomak objekata su proizvoljni,
+\item boja objekta je proizvoljna.
+\end{itemize}
+Ulaz sustava u fazi inicijalizacije je skup samostalnih objekata koje želimo klasificirati. U fazi raspoznavanja sustavu predajemo sliku koja sadrži preklapajuće objekte. Izlaz sustava su nazivi objekata koji se nalaze na slici te njihove vjerojatnosti da sudjeluju u preklapanju.
+
+\subsection{Konceptualno rješenje zadatka}
+
+Algoritmi i koncepti korišteni u rješavanju zadatka:
+\begin{description}
+\item[Binarizacija slike pragom:] Ulazni podatci su slike u JPG formatu. Izlazni podatci su binarne slike.
+\item[Izlučivanje značajki:]  Riječ je zapravo o pronalasku linearnih segmenata konture u sceni, odnosno pronalasku rubova u sceni te aproksimacija rubova poligonima. Ulazni podatci su binarne slike, a izlaz vektor segmenata.
+\item[Generiranje hipoteza:] Usporedba linearnih segmenata konture u slici sa segmentima iz modela u bazi podataka skupa za učenje. Ulazni podatci su vektori segmenata, a izlazni podatci generirane hipoteze, točnije, mjere sličnosti kompatibilnih linearnih segmenata.
+\item[Evaluacija hipoteza:] Nakon generiranja hipoteza potrebno je iste evaluirati. Odnosno, usporediti i ostale linearne segmente sa segmentima modela. Ulazne podatke predstavljaju generirane hipoteze, a izlazni podatci su hipoteze sortirane na način da prva odgovara najbolje procijenjenoj hipotezi, a posljednja najgore procijenjenoj hipotezi.
+\end{description}
+Izlaz sustava su nazivi klasa objekata (iz najbolje procijenjenih hipoteza) koji sudjeluju u preklapanju unutar nove scene.
+
+\section{Postupak rješavanja zadatka}
+
+Sustav je zamišljen tako da se sastoji od četiri osnovne komponente:
+\begin{itemize}
+\item komponente za učitavanje i spremanje slika,
+\item filtera slika,
+\item vaditelja značajki objekata na slikama,
+\item algoritma za raspoznavanje.
+\end{itemize}
+Filter slika priprema slike za postupak vađenja značajki, primjerice, pretvara RGB sliku u binarnu. Vaditelj značajki zapisuje objekte na slikama u format prilagođen algoritmu raspoznavanja.
+
+Sustav raspoznavanja treba biti robustan i otporan na što veći broj konfiguracija preklapanja. Navedeni zahtjev podrazumijeva da će algoritam raspoznavanja te značajke koje on koristi moći nesmetano funkcionarati i u uvjetima kad su:
+\begin{itemize}
+\item objekti proizvoljno rotirani,
+\item objekti proizvoljno skalirani,
+\item objekti proizvoljno smješteni u ravnini,
+\item površine preklapanja različite,
+\item objekti jednake boje.
+\end{itemize}
+
+Opisan rad sustava možemo promatrati kroz dva koraka - inicijalizaciju i raspoznavanje objekata scene. Prilikom inicijalizacije, za svaki objekt koji želimo klasificirati sustavu predočavamo scenu koja sadrži samo taj objekt. Sustav vadi značajke i sprema ih. U koraku raspoznavanja, sustav na ulazu dobiva sliku scene u kojoj se nalaze preklopljeni objekti, koristi spremljene značajke nepreklopljenih objekata, vadi značajke objekata unutar nove scene te uspoređuje značajke objekata nove scene sa spremljenim značajkama. Navedeni korak rješenja se zasniva na konceptima opisanim u \citep{}.
+
+\subsection{Poligonizacija objekata}
+
+\subsubsection{Dobivanje binarne slike iz slike u boji}
+
+Slika u boji se prvo pretvara u sivu sliku, gdje se vrijednost slikovnog elementa sive slike računa kao vrijednost osvijetljenosti (\engl{luminance})  $s$ na sljedeći način:
+$$s = r \ldot 0.3 + g \ldot 0.59 + b \ldot 0.1,$$
+gdje su $r$, $g$ i $b$ komponente slikovnog elementa slike u RGB prostoru boja. Nakon toga se siva slika pretvara u binarnu. Slikovni element se uspoređuje s pragom te ako mu je vrijednost veća od praga, tada će on poprimiti iznos jednak nuli. U suprotnom slučaju slikovni element poprima vrijednost 255.
+
+\subsubsection{Algoritam za praćenje granice}
+
+Algoritam se izvodi na sljedeći način:
+\begin{enumerate}
+\item Provjeriti sastoji li se objekt od jednog izoliranog slikovnog elementa. Ako je to istina, taj element je ujedno i granica. U tom slučaju zaustaviti postupak.
+\item Pretraživanjem slike naći dva susjedna elementa, $c E S$ i $d E not S$, pri čemu je $S$ skup točaka koje pripadaju objektu (povezanoj slikovnoj komponenti).
+\item Promijeniti vrijednost točke $c$ u 3, a točke $d$ u 2.
+\item 
+
+
+
+\bibliographystyle{su2010}
+\bibliography{su2010}
+
+
+\end{document}
