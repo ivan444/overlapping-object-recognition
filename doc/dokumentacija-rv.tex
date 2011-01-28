@@ -85,7 +85,7 @@ se zasniva na konceptima opisanim u \citep{ayache2009hyper}.
 \subsection{Dobivanje binarne slike iz slike u boji}
 Slika u boji se prvo pretvara u sivu sliku, gdje se vrijednost slikovnog
 elementa sive slike računa kao vrijednost osvijetljenosti \engl{luminance} 
-$s$ na sljedeći način:$$s = r \cdot 0.3 + g \cdot 0.59 + b \cdot 0.1,$$
+$s$ na sljedeći način:$$s = r \cdot 0.3 + g \cdot 0.59 + b \cdot 0.11,$$
 gdje su $r$, $g$ i $b$ komponente slikovnog elementa slike u RGB prostoru boja.
 Nakon toga se siva slika pretvara u binarnu. Slikovni element se uspoređuje s
 pragom te ako mu je vrijednost veća od praga, tada će on poprimiti iznos jednak
@@ -170,7 +170,7 @@ Nakon generiranja hipoteza potrebno je iste evaluirati, pri čemu se iterativno 
 Algoritam u svakoj iteraciji odabire segment $M_i$ iz modela (slika
 \ref{fig:redoslijed_odabira}) i izračunava njegov položaj u sceni trenutnom
 transformacijom. Nakon toga se uspoređuje različitost transformiranog segmenta
-modela, $tM_i$ sa svakim segmentom u sceni, $S_j$. Mjera sličnosti $d_{ij}$
+modela, $tM_i$ sa svakim segmentom u sceni, $S_j$. Mjera različitosti $d_{ij}$
 između segmenata $tM_i$ i $S_j$ može se izraziti pomoću tri mjere:
 \begin{enumerate}
   \item $a_{ij}$ je mjera koja se računa kao apsolutna vrijednost razlike između segmenata $tM_i$ i $S_j$,
@@ -205,11 +205,11 @@ l_{Mean}$, gdje je $l_{Mean}$ prosječna duljina segmenata u modelu, a $D_{Max}$
 je definiran u prethodnom potpoglavlju.
 
 Ako predstavimo transformaciju $T$ pomoću vektora
-$$ v=(k\cdot  \cos\beta, k\cdot \sin\beta, tx,t y)^T$$
+$$ v=(k\cdot  \cos\beta, k\cdot \sin\beta, tx,t y)^\top$$
 te točku $s_{ji}$  s koordinatama $x_i'$ i $y_i'$
-predstavimo vektorom ${Y_i}=(x_i',y_i')^T$ možemo prethodni izraz zapisati
+predstavimo vektorom ${Y_i}=(x_i',y_i')^\top$ možemo prethodni izraz zapisati
 kao:
-$$R=\sum_i({Y_i}-C_i v)^T W_i^{-1}({Y_i}-C_i v).$$
+$$R=\sum_i({Y_i}-C_i v)^\top W_i^{-1}({Y_i}-C_i v).$$
 Matrica $C_i$ je dana sljedećim izrazom:
 $$C_i = \left [ \begin{array}{cccc}
 x_i & -y_i & 1 & 0\\
@@ -223,13 +223,14 @@ w_i^2 & 0\\
 gdje vrijedi $w_i = K/l_i$.
 
 Kako bi se mogli kontrolirati parametri transformacije $T$, u minimizacijski kriterij dodan je dodatni član, pa se izraz naposlijetku može zapisati na sljedeći način:
-$$R=\sum_i({Y_i}-C_i v)^T W_i^{-1}({Y_i}-C_i v)+( v -  v_0)^T S_0^{-1}( v- v_0).$$
+$$R=\sum_i({Y_i}-C_i v)^\top W_i^{-1}({Y_i}-C_i v)+( v -  v_0)^\top S_0^{-1}( v- v_0).$$
 $R$ je kvadratni kriterij koji se može rekurzivno minimizirati sljedećim jednadžbama:
 \begin{align*}
 v_i & = v_{i-1}+K_i(Y_i-C_i\cdot v_i),\\
-K_i & = S_{i-1}C_i^T(W_i+C_iS_{i-1}C_i^T)^{-1},\\
-S_i & = (l+K_iC_i)S_{i-1}.
+K_i & = S_{i-1}C_i^\top(W_i+C_iS_{i-1}C_i^\top)^{-1},\\
+S_i & = (I - K_i C_i)S_{i-1},
 \end{align*}
+pri čemu je $I$ jedinična matrica.
 Ove jednadžbe se inicijaliziraju za svaku hipotezu te se rekurzivno ažuriraju nakon svakog sparivanja segmenata modela i scene.
 
 \chapter{Evaluacija rješenja}
