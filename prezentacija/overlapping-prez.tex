@@ -230,7 +230,11 @@ Postotak: & $95.4\%$ & $3.6\%$ & $25.3\%$ & $59.0\%$ & $8.4\%$\\
 \begin{frame}
 \frametitle{Izdvojeni problemi}
 \begin{itemize}
-  \item Koliko je likova na sceni?
+  \item \emph{Divide and conquer} algoritam nije invarijantan na rotaciju.
+  \item Bilo je potrebno stopiti dio segmenata nakon prolaska \emph{divide and conquer} algoritma.
+  \item Postupak je dosta osjetljiv na šum pri određivanju segmenata. 
+  \item Postupak ne daje odgovor na pitanje ``\emph{Koliko je objekata na sceni?}.''
+  \item Likovi u bazi su nakon određivanja segmenata postali previše slični (primjerice, oktagon i krug).
 \end{itemize}
 \end{frame}
 
@@ -239,7 +243,8 @@ Postotak: & $95.4\%$ & $3.6\%$ & $25.3\%$ & $59.0\%$ & $8.4\%$\\
 \frametitle{Moguća poboljšanja, nastavak rada}
 \begin{itemize}
   \item Evaluiranje drugih metoda aproksimiranja konture (segmentiranja).
-  \item Korištenje drugih transformacija pri generiranju hipoteza. 
+  \item Korištenje drugih transformacija pri generiranju hipoteza.
+  \item Uvođenje dodatnih mjera za određivanje kvalitete hipoteza.
   \item Izgradnja heurističkih pravila za određivanje broja objekata koji se pojavljuju na slici.
   \item Proširenje metode za raspoznavanje preklapanja više od 2 objekta.
 \end{itemize}
